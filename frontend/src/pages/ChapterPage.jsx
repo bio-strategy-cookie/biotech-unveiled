@@ -1,3 +1,4 @@
+import AiTutor from '../components/AiTutor.jsx'
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import chapter0 from '../data/chapter0Data.js'
@@ -188,6 +189,7 @@ export default function ChapterPage({ userLevel, xp, setXp }) {
           </button>
         </div>
       </div>
+      <AiTutor topicTitle={topic.title} topicContent={topic.content} />
     </div>
   )
 }

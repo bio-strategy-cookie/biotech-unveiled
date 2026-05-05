@@ -38,7 +38,7 @@ const roles = [
   {
     id: 'policy',
     label: 'The Policy Maker',
-    desc: 'You set the rules. Every decision affects millions. One decision can determine who gets access — and who doesn\'t.',
+    desc: "You set the rules. Every decision affects millions. One decision can determine who gets access — and who doesn't.",
     dot: '#854F0B',
     bg: '#FAEEDA',
     emoji: '⚖️',
@@ -48,18 +48,12 @@ const roles = [
   },
 ]
 
-const levels = [
-  { id: 'green', label: 'Clinical or research', eg: 'e.g. oncologists, researchers, scientists', pill: 'Foundational content', border: 'border-green-400', bg: 'bg-green-50', pillStyle: 'bg-green-100 text-green-800', dot: 'bg-green-500' },
-  { id: 'yellow', label: 'Industry adjacent', eg: 'e.g. BD professionals, investors, regulatory', pill: '+ Intermediate content', border: 'border-yellow-400', bg: 'bg-yellow-50', pillStyle: 'bg-yellow-100 text-yellow-800', dot: 'bg-yellow-500' },
-  { id: 'red', label: 'Deep industry experience', eg: 'e.g. senior industry, experienced investors', pill: 'All content', border: 'border-red-400', bg: 'bg-red-50', pillStyle: 'bg-red-100 text-red-800', dot: 'bg-red-500' },
-]
-
 const valueProps = [
   { icon: '🧠', title: 'Understand the full system', desc: 'From molecule to market—every stage, every player, and why the system works the way it does.' },
-  { icon: '💬', title: 'Speak every stakeholder\'s language', desc: 'Understand the incentives of investors, clinicians, regulators, and payers—and how to work across them.' },
+  { icon: '💬', title: "Speak every stakeholder's language", desc: 'Understand the incentives of investors, clinicians, regulators, and payers—and how to work across them.' },
   { icon: '⚖️', title: 'Navigate price & access debates', desc: 'Understand the Biotech Social Contract and distinguish sound reform from oversimplified solutions.' },
   { icon: '💰', title: 'Think like an investor', desc: 'Learn NPV, portfolio logic, and why some critical drugs never get funded.' },
-  { icon: '🏥', title: 'Understand the insurance system', desc: 'Why FDA approval doesn\'t guarantee access—and what actually determines it.' },
+  { icon: '🏥', title: 'Understand the insurance system', desc: "Why FDA approval doesn't guarantee access—and what actually determines it." },
   { icon: '🚀', title: 'Be a more effective advocate', desc: 'Make decisions and support policies that lead to real patient impact.' },
 ]
 
@@ -97,43 +91,33 @@ const stages = [
 ]
 
 const stageColors = {
-  green: { num: 'bg-green-100 text-green-800', label: 'text-green-700', border: 'border-green-200' },
+  green:  { num: 'bg-green-100 text-green-800',   label: 'text-green-700',  border: 'border-green-200' },
   purple: { num: 'bg-purple-100 text-purple-800', label: 'text-purple-700', border: 'border-purple-200' },
-  amber: { num: 'bg-yellow-100 text-yellow-800', label: 'text-yellow-700', border: 'border-yellow-200' },
+  amber:  { num: 'bg-yellow-100 text-yellow-800', label: 'text-yellow-700', border: 'border-yellow-200' },
 }
 
 export default function HomePage({ userLevel, setUserLevel, userRole, setUserRole, xp }) {
   const navigate = useNavigate()
-  const [step, setStep] = useState(1)
 
   const handleStart = () => {
-    if (userRole && userLevel) navigate('/chapter/0/topic/0')
+    if (userRole) navigate('/chapter/0/topic/0')
   }
 
-  if (!userRole || !userLevel) {
+  if (!userRole) {
     return (
       <div className="min-h-screen bg-gray-50">
 
-        {/* 1. Hero — full width, 65vh, cover */}
-        <div style={{height: '60vh', overflow: 'hidden'}}>
-          <img
-            src="/hero-bg.png"
-            alt="Biotech Unveiled"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'center 20%',
-              display: 'block',
-            }}
-          />
+        {/* 1. Hero */}
+        <div style={{ height: '60vh', overflow: 'hidden' }}>
+          <img src="/hero-bg.png" alt="Biotech Unveiled"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%', display: 'block' }} />
         </div>
 
         {/* 2. Identity bar */}
-        <div style={{background: 'linear-gradient(to bottom, #0a1628, #111827)'}}>
+        <div style={{ background: 'linear-gradient(to bottom, #0a1628, #111827)' }}>
           <div className="px-10 py-8">
             <div className="flex justify-center mb-6">
-              <div className="inline-flex items-center gap-2" style={{background: 'rgba(93,202,165,0.15)', border: '0.5px solid rgba(93,202,165,0.35)', padding: '4px 14px', borderRadius: '99px'}}>
+              <div className="inline-flex items-center gap-2" style={{ background: 'rgba(93,202,165,0.15)', border: '0.5px solid rgba(93,202,165,0.35)', padding: '4px 14px', borderRadius: '99px' }}>
                 <div className="w-2 h-2 rounded-full bg-teal-400"></div>
                 <span className="text-sm text-teal-300">An RA Capital course · Peter Kolchinsky, PhD</span>
               </div>
@@ -147,10 +131,8 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
               ))}
             </div>
             <div className="flex justify-center mt-6">
-              <button
-                onClick={() => document.getElementById('course-intro').scrollIntoView({behavior: 'smooth'})}
-                className="px-7 py-3 bg-teal-400 text-gray-900 text-base font-semibold rounded-xl hover:bg-teal-300 transition-all"
-              >
+              <button onClick={() => document.getElementById('course-intro').scrollIntoView({ behavior: 'smooth' })}
+                className="px-7 py-3 bg-teal-400 text-gray-900 text-base font-semibold rounded-xl hover:bg-teal-300 transition-all">
                 Learn more ↓
               </button>
             </div>
@@ -158,17 +140,14 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
         </div>
 
         {/* Features strip */}
-        <div className="grid grid-cols-4 bg-white border-b border-gray-200">
+        <div className="grid grid-cols-3 bg-white border-b border-gray-200">
           {[
-            { bg: 'bg-green-50', color: 'text-green-700', label: '3 difficulty levels', sub: 'Personalised to your background', icon: '🎯' },
-            { bg: 'bg-purple-50', color: 'text-purple-700', label: 'AI tutor', sub: 'Ask questions on every topic', icon: '🤖' },
-            { bg: 'bg-yellow-50', color: 'text-yellow-700', label: 'XP + streaks', sub: 'Earn points as you progress', icon: '⚡' },
-            { bg: 'bg-blue-50', color: 'text-blue-700', label: 'Certificate', sub: 'Pass the exam to earn yours', icon: '🏆' },
+            { bg: 'bg-purple-50', color: 'text-purple-700', label: 'AI tutor',              sub: 'Ask questions on every topic',    icon: '🤖' },
+            { bg: 'bg-yellow-50', color: 'text-yellow-700', label: 'XP + streaks',          sub: 'Earn points as you progress',     icon: '⚡' },
+            { bg: 'bg-blue-50',   color: 'text-blue-700',   label: 'Certificate',           sub: 'Pass the exam to earn yours',     icon: '🏆' },
           ].map((item, i) => (
             <div key={i} className={`flex items-center gap-3 px-5 py-5 ${i < 3 ? 'border-r border-gray-200' : ''}`}>
-              <div className={`w-10 h-10 rounded-xl ${item.bg} flex items-center justify-center flex-shrink-0 text-xl`}>
-                {item.icon}
-              </div>
+              <div className={`w-10 h-10 rounded-xl ${item.bg} flex items-center justify-center flex-shrink-0 text-xl`}>{item.icon}</div>
               <div>
                 <div className={`text-base font-semibold ${item.color}`}>{item.label}</div>
                 <div className="text-sm text-gray-500 mt-0.5">{item.sub}</div>
@@ -210,8 +189,8 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
         {/* 4. Value propositions */}
         <div className="bg-gray-900 px-10 py-12">
           <div className="max-w-4xl mx-auto">
-            <div className="text-xs text-white/40 uppercase tracking-widest mb-3 font-medium">What you'll walk away with</div>
-            <h2 className="text-3xl font-semibold text-white mb-2 leading-tight">A new way of seeing — and navigating — biotech</h2>
+            <div className="text-xs text-white/40 uppercase tracking-widest mb-3 font-medium">What you will walk away with</div>
+            <h2 className="text-3xl font-semibold text-white mb-2 leading-tight">A new way of seeing and navigating biotech</h2>
             <p className="text-base text-white/50 mb-8">Regardless of how long you have been in the industry.</p>
             <div className="grid grid-cols-3 gap-5">
               {valueProps.map((item, i) => (
@@ -230,17 +209,16 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
           <div className="max-w-4xl mx-auto">
             <div className="text-xs text-gray-400 uppercase tracking-widest mb-3 font-medium">Who this is for</div>
             <h2 className="text-3xl font-semibold text-gray-900 mb-2">Built for biotech professionals at every stage</h2>
-            <p className="text-base text-gray-500 mb-8">Pick your role — same content, different emotional stakes.</p>
+            <p className="text-base font-semibold text-gray-800 mb-2">Pick your role — same system, different perspective.</p>
+            <p className="text-base text-gray-500 mb-8">Everyone takes the same course. But your role shapes how you see every decision and reveals how others would approach it differently..</p>
             <div className="grid grid-cols-4 gap-4">
               {roles.map(r => (
                 <div key={r.id} className="border border-gray-200 rounded-2xl overflow-hidden">
-                  <div className="h-24 flex items-center justify-center text-4xl" style={{background: r.bg}}>
-                    {r.emoji}
-                  </div>
+                  <div className="h-24 flex items-center justify-center text-4xl" style={{ background: r.bg }}>{r.emoji}</div>
                   <div className="p-4">
                     <div className="text-sm font-semibold text-gray-900 mb-1">{r.label}</div>
                     <div className="text-xs text-gray-500 leading-relaxed mb-2">{r.desc}</div>
-                    <div className="text-xs font-medium px-2 py-1 rounded-full inline-block" style={{background: r.bg, color: r.dot}}>{r.stat}</div>
+                    <div className="text-xs font-medium px-2 py-1 rounded-full inline-block" style={{ background: r.bg, color: r.dot }}>{r.stat}</div>
                   </div>
                 </div>
               ))}
@@ -260,9 +238,7 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
                 return (
                   <div key={i} className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
                     <div className={`px-6 py-4 flex items-center gap-4 border-b ${c.border} bg-gray-50`}>
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl flex-shrink-0 ${c.num}`}>
-                        {stage.icon}
-                      </div>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl flex-shrink-0 ${c.num}`}>{stage.icon}</div>
                       <div>
                         <div className={`text-base font-semibold ${c.label}`}>{stage.name}</div>
                         <div className="text-sm text-gray-500">{stage.tagline}</div>
@@ -300,89 +276,46 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
           </div>
         </div>
 
-        {/* 8. CTA — onboarding */}
+        {/* 8. CTA — role selection only */}
         <div id="role-section" className="bg-gray-900 px-10 py-12">
           <div className="max-w-2xl mx-auto">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-semibold text-white mb-3">Ready to begin?</h2>
-              <p className="text-base text-white/60">Choose your role and content level to personalise your experience.</p>
+              <p className="text-base text-white/60">Choose your role to personalise your experience.</p>
             </div>
 
             <div className="flex items-center justify-center gap-3 mb-8">
-              <div className={`flex items-center gap-2 text-base ${step === 1 ? 'text-white font-medium' : 'text-white/40'}`}>
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium ${step === 1 ? 'bg-teal-400 text-gray-900' : step > 1 ? 'bg-green-500 text-white' : 'bg-white/10 text-white/40'}`}>
-                  {step > 1 ? '✓' : '1'}
-                </div>
+              <div className="flex items-center gap-2 text-base text-white font-medium">
+                <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium bg-teal-400 text-gray-900">1</div>
                 Choose your role
-              </div>
-              <div className="w-10 h-px bg-white/20"></div>
-              <div className={`flex items-center gap-2 text-base ${step === 2 ? 'text-white font-medium' : 'text-white/40'}`}>
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium ${step === 2 ? 'bg-teal-400 text-gray-900' : 'bg-white/10 text-white/40'}`}>2</div>
-                Set your level
               </div>
             </div>
 
-            {step === 1 && (
-              <div>
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  {roles.map(r => (
-                    <div
-                      key={r.id}
-                      onClick={() => setUserRole(r.id)}
-                      className={`border-2 rounded-2xl overflow-hidden cursor-pointer transition-all ${userRole === r.id ? 'border-teal-400' : 'border-white/10 hover:border-white/30'}`}
-                    >
-                      <div className="h-24 relative flex items-center justify-center" style={{background: r.bg}}>
-                        <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full opacity-20">
-                          <path d={r.visual} fill="none" stroke={r.visualColor} strokeWidth="2.5" strokeLinecap="round"/>
-                        </svg>
-                        <span className="text-5xl relative z-10">{r.emoji}</span>
-                        <div className="absolute bottom-2 right-2 left-2 text-center text-xs font-medium px-2 py-1 rounded-full" style={{background: 'rgba(255,255,255,0.85)', color: r.dot}}>
-                          {r.stat}
-                        </div>
-                      </div>
-                      <div className="p-4 bg-white/5">
-                        <div className="text-base font-semibold text-white mb-1">{r.label}</div>
-                        <div className="text-sm text-white/60 leading-relaxed">{r.desc}</div>
-                      </div>
+            <div>
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                {roles.map(r => (
+                  <div key={r.id} onClick={() => setUserRole(r.id)}
+                    className={`border-2 rounded-2xl overflow-hidden cursor-pointer transition-all ${userRole === r.id ? 'border-teal-400' : 'border-white/10 hover:border-white/30'}`}>
+                    <div className="h-24 relative flex items-center justify-center" style={{ background: r.bg }}>
+                      <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full opacity-20">
+                        <path d={r.visual} fill="none" stroke={r.visualColor} strokeWidth="2.5" strokeLinecap="round" />
+                      </svg>
+                      <span className="text-5xl relative z-10">{r.emoji}</span>
+                      <div className="absolute bottom-2 right-2 left-2 text-center text-xs font-medium px-2 py-1 rounded-full"
+                        style={{ background: 'rgba(255,255,255,0.85)', color: r.dot }}>{r.stat}</div>
                     </div>
-                  ))}
-                </div>
-                <button
-                  onClick={() => userRole && setStep(2)}
-                  className={`w-full py-4 rounded-xl text-base font-semibold transition-all ${userRole ? 'bg-teal-400 text-gray-900 hover:bg-teal-300' : 'bg-white/10 text-white/30 cursor-not-allowed'}`}
-                >
-                  Continue →
-                </button>
-              </div>
-            )}
-
-            {step === 2 && (
-              <div>
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  {levels.map(l => (
-                    <div
-                      key={l.id}
-                      onClick={() => setUserLevel(l.id)}
-                      className={`border-2 rounded-2xl p-5 cursor-pointer transition-all ${userLevel === l.id ? `${l.border} ${l.bg}` : 'border-white/10 bg-white/5 hover:border-white/30'}`}
-                    >
-                      <div className={`w-4 h-4 rounded-full mb-3 ${l.dot}`}></div>
-                      <div className={`text-sm font-semibold mb-1 ${userLevel === l.id ? 'text-gray-800' : 'text-white'}`}>{l.label}</div>
-                      <div className={`text-xs italic mb-3 ${userLevel === l.id ? 'text-gray-500' : 'text-white/50'}`}>{l.eg}</div>
-                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${l.pillStyle}`}>{l.pill}</span>
+                    <div className="p-4 bg-white/5">
+                      <div className="text-base font-semibold text-white mb-1">{r.label}</div>
+                      <div className="text-sm text-white/60 leading-relaxed">{r.desc}</div>
                     </div>
-                  ))}
-                </div>
-                <div className="flex gap-3">
-                  <button onClick={() => setStep(1)} className="px-6 py-4 rounded-xl text-base border border-white/20 text-white/70 hover:bg-white/5 transition-all">← Back</button>
-                  <button
-                    onClick={handleStart}
-                    className={`flex-1 py-4 rounded-xl text-base font-semibold transition-all ${userLevel ? 'bg-teal-400 text-gray-900 hover:bg-teal-300' : 'bg-white/10 text-white/30 cursor-not-allowed'}`}
-                  >
-                    Begin my journey →
-                  </button>
-                </div>
+                  </div>
+                ))}
               </div>
-            )}
+              <button onClick={handleStart}
+                className={`w-full py-4 rounded-xl text-base font-semibold transition-all ${userRole ? 'bg-teal-400 text-gray-900 hover:bg-teal-300' : 'bg-white/10 text-white/30 cursor-not-allowed'}`}>
+                Begin my journey →
+              </button>
+            </div>
           </div>
         </div>
 
@@ -402,7 +335,6 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
   }
 
   const roleLabel = roles.find(r => r.id === userRole)?.label || 'Learner'
-  const levelLabel = { green: 'Clinical/Research', yellow: 'Industry Adjacent', red: 'Deep Industry' }[userLevel]
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -415,9 +347,8 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
         </div>
         <div className="flex items-center gap-3">
           <span className="text-xs px-3 py-1 rounded-full bg-purple-100 text-purple-800 font-medium">{roleLabel}</span>
-          <span className="text-xs px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 font-medium">{levelLabel}</span>
           <span className="text-xs px-3 py-1 rounded-full bg-yellow-50 text-yellow-700 font-medium">{xp} XP</span>
-          <button onClick={() => { setUserRole(null); setUserLevel(null); }} className="text-xs text-gray-400 hover:text-gray-600">← Change</button>
+          <button onClick={() => setUserRole(null)} className="text-xs text-gray-400 hover:text-gray-600">← Change</button>
         </div>
       </div>
 
@@ -434,9 +365,7 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
               <div key={stage.num}>
                 <div className={`bg-white border rounded-2xl overflow-hidden transition-all ${isLocked ? 'opacity-50' : 'hover:shadow-sm'} border-gray-200`}>
                   <div className={`px-6 py-4 flex items-center gap-4 border-b ${c.border} bg-gray-50`}>
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl flex-shrink-0 ${c.num}`}>
-                      {stage.icon}
-                    </div>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl flex-shrink-0 ${c.num}`}>{stage.icon}</div>
                     <div className="flex-1">
                       <div className={`text-base font-semibold ${c.label}`}>{stage.name}</div>
                       <div className="text-sm text-gray-500">{stage.tagline}</div>
@@ -451,10 +380,8 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
                       ))}
                     </div>
                     {isAvailable && (
-                      <button
-                        onClick={() => navigate(`/chapter/${stage.chapterIds[0]}/topic/0`)}
-                        className="px-5 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-700 transition-all"
-                      >
+                      <button onClick={() => navigate(`/chapter/${stage.chapterIds[0]}/topic/0`)}
+                        className="px-5 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-700 transition-all">
                         Start Stage {stage.num} →
                       </button>
                     )}
@@ -476,17 +403,6 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
             <div className="text-sm text-white/50">Your certificate is waiting. Score ≥70% to unlock it.</div>
           </div>
           <div className="text-3xl">🏆</div>
-        </div>
-
-        <div className="mt-6 bg-white rounded-2xl p-6 flex gap-5 border border-gray-200">
-          <div className="w-14 h-14 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
-            <span className="text-base font-semibold text-teal-400">PK</span>
-          </div>
-          <div>
-            <div className="text-base font-semibold text-gray-900">Peter Kolchinsky, PhD</div>
-            <div className="text-sm text-gray-500 mb-2">Founder & Managing Partner, RA Capital Management</div>
-            <div className="text-sm text-gray-600 italic leading-relaxed">"Biotech deals aren't just about science — they're about navigating a socio-economic contract. This course will give you the context you need to thrive in this industry."</div>
-          </div>
         </div>
 
         <div className="mt-6 bg-gray-900 rounded-2xl px-6 py-4 flex items-center justify-between">

@@ -12,6 +12,7 @@ import chapter8 from '../data/chapter8Data.js'
 import chapter9 from '../data/chapter9Data.js'
 import AiTutor from '../components/AiTutor.jsx'
 import ReimbursementRoulette from '../components/ReimbursementRoulette.jsx'
+import Stakeholder from '../components/Stakeholder.jsx'
 
 const chapters = { 0: chapter0, 1: chapter1, 2: chapter2, 3: chapter3, 4: chapter4, 5: chapter5, 6: chapter6, 7: chapter7, 8: chapter8, 9: chapter9  }
 
@@ -417,7 +418,8 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
 
           {/* Quiz */}
           {topic.type === 'quiz' && <QuizBlock topic={topic} />}
-          {topic.type === 'game' && <ReimbursementRoulette userRole={userRole} />}
+          {topic.type === 'game' && topic.id === 'c9t5' && <Stakeholder userRole={userRole} />}
+{topic.type === 'game' && topic.id !== 'c9t5' && <ReimbursementRoulette userRole={userRole} />}
 
           {/* Data */}
           {topic.type === 'data' && <DataBlock topic={topic} />}

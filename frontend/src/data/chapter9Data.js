@@ -40,6 +40,15 @@ const chapter9 = {
         content: "On this journey, if you're an academic scientist or work in industry, you have likely also learned that public policy and price controls can determine whether there will be funding for your research and your dreams of making a difference in the lives of patients.\n\nYou've learned that if America continues to be angry about some people not being able to afford new medicines and misdirects that anger to call for price controls, your work might be defunded and never see the light of day.\n\nIf you're a patient or care about someone with a disease who is waiting for their cure, you've learned that it's possible for Congress to pass a counter-productive law that redirects funding away from what you care about.\n\n**If everyone allocated even 1% of their time and effort to defending innovation and calling for insurance reform, we could protect this small but vital part of our economy so that it continues to serve all of us.**\n\nImagine if millions of Americans knew what you know and were game to speak up — signing a letter to Washington advocating for the biotech social contract, writing a Congressman to protect the Hatch-Waxman Act, posting on social media about why capping OOP costs is the real solution.\n\nWould you be willing to get personally involved, even in a small way, to defend the biotech social contract, protect innovation, and advocate for insurance reform?",
         xp: 10,
       },
+      {
+        id: "c9t5",
+        level: "green",
+        type: "game",
+        contextNote: "The capstone experience — your role, your decisions, your ripples",
+        title: "Stakeholder",
+        content: "You've seen the whole system. Now play your part in it. Pick your role, face 5 decisions only you can make, and watch in real time as your choices ripple to every other stakeholder in the drug development ecosystem.",
+        xp: 50,
+      },
     ]
   }
    

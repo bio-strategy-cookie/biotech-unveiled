@@ -113,7 +113,7 @@ const roleOutcomes = {
 
 const rounds = [
   { id:'formulary', label:'Obstacle 1 — Formulary placement', title:'The PBM wants a bigger rebate', desc:"Express Scripts will only place your drug on Tier 2 (preferred, low copay) if you offer a 45% rebate off list price. At 45%, your net price drops to $46,750/year — below your break-even threshold. Accept Tier 2, push back, or accept Tier 3?", choices:[{text:'Accept Tier 2 with 45% rebate',outcome:'partial',impact:-10},{text:'Negotiate hard — push back on rebate',outcome:'partial',impact:-15},{text:'Accept Tier 3 (non-preferred)',outcome:'bad',impact:-30}]},
-  { id:'priorauth', label:'Obstacle 2 — Prior authorization', title:'United Healthcare requires prior auth for every patient', desc:"United covers 40M lives. They have implemented prior authorization (PA) — meaning doctors must get insurer approval before dispensing your drug.They require a 12-page form, lab results, and 2 prior treatment failures before dispensing. Average approval time: 3 weeks.", choices:[{text:'Build a dedicated PA support team',outcome:'partial',impact:-15},{text:'Challenge legally with AMA support',outcome:'partial',impact:-10},{text:'Offer deep discount to remove PA',outcome:'bad',impact:-20}]},
+  { id:'priorauth', label:'Obstacle 2 — Prior authorization', title:'United Healthcare requires prior auth for every patient', desc:"United covers 40M lives. They require a 12-page form, lab results, and 2 prior treatment failures before dispensing. Average approval time: 3 weeks.", choices:[{text:'Build a dedicated PA support team',outcome:'partial',impact:-15},{text:'Challenge legally with AMA support',outcome:'partial',impact:-10},{text:'Offer deep discount to remove PA',outcome:'bad',impact:-20}]},
   { id:'steptherapy', label:'Obstacle 3 — Step therapy', title:'Aetna requires 2 generic drug failures first', desc:"Aetna requires patients to fail on methotrexate and hydroxychloroquine before your drug is covered. Your trials showed these drugs are ineffective for 60% of your target patients.", choices:[{text:'Accept it — build fast-track exceptions',outcome:'partial',impact:-20},{text:'Fight it with patient advocacy groups',outcome:'good',impact:-10},{text:'Accept fully — focus on other plans',outcome:'bad',impact:-25}]},
   { id:'pbm', label:'Obstacle 4 — Accumulator programs', title:'PBMs are capturing your copay assistance', desc:"You launched a $0 copay program for year one. But CVS Caremark and OptumRx have implemented accumulator adjustment programs that prevent your copay assistance from counting toward deductibles.", choices:[{text:'Continue the program — absorb the cost',outcome:'partial',impact:-10},{text:'Lobby for federal accumulator ban',outcome:'partial',impact:-5},{text:'Eliminate copay assistance entirely',outcome:'bad',impact:-20}]},
   { id:'oop', label:'Obstacle 5 — The pharmacy counter', title:'A patient walks away without their drug', desc:"After everything — formulary, prior auth, step therapy — a patient arrives at the pharmacy. Their copay: $420 for a 30-day supply. Monthly income: $3,200. They pause. They put the prescription back.", choices:[{text:'This is the system working as designed',outcome:'bad',impact:-25},{text:'This is why we need OOP cost caps',outcome:'good',impact:-5},{text:'This is why we need price controls',outcome:'partial',impact:-15}]},
@@ -181,6 +181,7 @@ export default function ReimbursementRoulette({ userRole }) {
   const [rotation, setRotation] = useState(0)
   const [spinning, setSpinning] = useState(false)
   const [showObstacle, setShowObstacle] = useState(false)
+  const [landedOn, setLandedOn] = useState(null)
   const rotRef = useRef(0)
   const animRef = useRef(null)
 
@@ -208,7 +209,8 @@ export default function ReimbursementRoulette({ userRole }) {
       } else {
         rotRef.current = endRot % 360
         setSpinning(false)
-        setShowObstacle(true)
+        setLandedOn(rounds[currentRound].label.split(' — ')[1])
+        setTimeout(() => { setLandedOn(null); setShowObstacle(true) }, 1500)
       }
     }
     animRef.current = requestAnimationFrame(animate)
@@ -218,17 +220,15 @@ export default function ReimbursementRoulette({ userRole }) {
     if (choiceMade !== null) return
     const choice = rounds[currentRound].choices[i]
     setAccess(prev => Math.max(0, prev + choice.impact))
-    setResults(prev => [...prev, { label: rounds[currentRound].label.split(' — ')[1], outcome: choice.outcome, impact: choice.impact }])
+    setResults(prev => [...prev, { label: rounds[currentRound].label.split(' — ')[1], outcome: choice.outcome, impact: choice.impact, choiceText: choice.text, outcomeText: getRoleOutcome(rounds[currentRound].id, i)?.text || choice.desc || '' }])
     setChoiceMade(i)
   }
 
   const getRoleOutcome = (roundId, choiceIndex) => {
-    console.log('role:', role, 'roundId:', roundId, 'choiceIndex:', choiceIndex)
     const r = roleOutcomes[roundId]
     if (!r || !r[choiceIndex]) return null
     return r[choiceIndex][role] || null
   }
-
 
   const nextRound = () => {
     if (currentRound + 1 >= rounds.length) {
@@ -237,6 +237,7 @@ export default function ReimbursementRoulette({ userRole }) {
       setCurrentRound(prev => prev + 1)
       setChoiceMade(null)
       setShowObstacle(false)
+      setLandedOn(null)
     }
   }
 
@@ -249,6 +250,7 @@ export default function ReimbursementRoulette({ userRole }) {
     setRotation(0)
     rotRef.current = 0
     setShowObstacle(false)
+    setLandedOn(null)
     if (userRole) setRole(userRole)
     else setRole(null)
   }
@@ -314,6 +316,12 @@ export default function ReimbursementRoulette({ userRole }) {
                 className={`px-10 py-3 rounded-full text-sm font-semibold transition-all ${spinning ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-gray-900 text-white hover:bg-gray-700'}`}>
                 {spinning ? 'Spinning...' : 'Spin the wheel'}
               </button>
+              {landedOn && (
+                <div className="text-center animate-pulse">
+                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Landed on</p>
+                  <p className="text-base font-semibold text-gray-900">{landedOn}</p>
+                </div>
+              )}
             </div>
             <div className="flex flex-col gap-4 flex-1">
               <p className="text-xs font-bold uppercase tracking-widest text-gray-400">The 5 obstacles</p>
@@ -360,7 +368,6 @@ export default function ReimbursementRoulette({ userRole }) {
 
           {choiceMade !== null && (() => {
             const roleOut = getRoleOutcome(round.id, choiceMade)
-            console.log('roleOut:', roleOut)
             return (
             <div className="bg-white rounded-2xl border border-gray-200 p-6">
               {roleOut ? (
@@ -395,13 +402,17 @@ export default function ReimbursementRoulette({ userRole }) {
         <h2 className="text-xl font-semibold text-gray-900 mb-2">Game over</h2>
         <p className="text-sm text-gray-500">Your drug reached <strong className="text-gray-900">{access}%</strong> of eligible patients.</p>
       </div>
-      <div className="flex flex-col gap-2 mb-6">
+      <div className="flex flex-col gap-3 mb-6">
         {results.map((r, i) => (
-          <div key={i} className="flex justify-between items-center bg-gray-50 rounded-xl px-4 py-3">
-            <span className="text-sm text-gray-700">{r.label}</span>
-            <span className={`text-xs font-semibold px-2 py-1 rounded-full ${r.outcome === 'good' ? 'bg-emerald-100 text-emerald-800' : r.outcome === 'bad' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
-              {r.impact}% access
-            </span>
+          <div key={i} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+            <div className="flex justify-between items-start mb-2">
+              <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{r.label}</p>
+              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${r.outcome === 'good' ? 'bg-emerald-100 text-emerald-800' : r.outcome === 'bad' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                {r.impact}% access
+              </span>
+            </div>
+            <p className="text-sm font-medium text-gray-800 mb-2">You chose: {r.choiceText}</p>
+            <p className="text-sm text-gray-600 leading-relaxed">{r.outcomeText}</p>
           </div>
         ))}
       </div>

@@ -419,7 +419,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
           {/* Quiz */}
           {topic.type === 'quiz' && <QuizBlock topic={topic} />}
           {topic.type === 'game' && topic.id === 'c9t5' && <Stakeholder userRole={userRole} />}
-{topic.type === 'game' && topic.id !== 'c9t5' && <ReimbursementRoulette userRole={userRole} />}
+          {topic.type === 'game' && topic.id !== 'c9t5' && <ReimbursementRoulette userRole={userRole} />}
 
           {/* Data */}
           {topic.type === 'data' && <DataBlock topic={topic} />}

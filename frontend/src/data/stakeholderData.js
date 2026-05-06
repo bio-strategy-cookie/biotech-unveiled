@@ -743,7 +743,7 @@ export const scenarios = {
           ripples: {
             scientist: { icon: '🔬', text: 'Mandatory patient assistance programs protect the most vulnerable patients. The scientific team didn\'t design this drug for only wealthy patients. The PAP, imperfect as it is, honors that.' },
             investor: { icon: '📈', text: 'Mandatory PAP reduces addressable market by 25% but avoids the march-in precedent that would have chilled all NIH-partnered investment. Right outcome for the ecosystem even if it hurts this asset.' },
-            clinician: { icon: '🏥', text: 'PAP covers your low-income patients. Your middle-income patients — the teacher with $2,800/month — still can\'t afford it. The PAP income threshold is the wrong threshold.' },
+            clinician: { icon: '🏥', text: 'The assistance program covers patients below a certain income threshold — but your patient, a teacher earning $2,800/month, earns just enough to be excluded. She still can\'t afford the drug. Income cutoffs always leave someone in the gap — the real fix is capping out-of-pocket costs for everyone.' },
           }
         },
         {

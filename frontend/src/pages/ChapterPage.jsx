@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import chapter0 from '../data/chapter0Data.js'
 import chapter1 from '../data/chapter1Data.js'
@@ -14,7 +14,7 @@ import AiTutor from '../components/AiTutor.jsx'
 import ReimbursementRoulette from '../components/ReimbursementRoulette.jsx'
 import Stakeholder from '../components/Stakeholder.jsx'
 
-const chapters = { 0: chapter0, 1: chapter1, 2: chapter2, 3: chapter3, 4: chapter4, 5: chapter5, 6: chapter6, 7: chapter7, 8: chapter8, 9: chapter9  }
+const chapters = { 0: chapter0, 1: chapter1, 2: chapter2, 3: chapter3, 4: chapter4, 5: chapter5, 6: chapter6, 7: chapter7, 8: chapter8, 9: chapter9 }
 
 // ── Lens data ─────────────────────────────────────────────────────────────────
 
@@ -61,17 +61,8 @@ const roleColors = {
   scientist:   { bg: 'bg-emerald-950', border: 'border-emerald-700', text: 'text-emerald-100', sub: 'text-emerald-400', chip: 'bg-emerald-800 text-emerald-200' },
   investor:    { bg: 'bg-blue-950',    border: 'border-blue-700',    text: 'text-blue-100',    sub: 'text-blue-400',    chip: 'bg-blue-800 text-blue-200' },
   clinician:   { bg: 'bg-violet-950',  border: 'border-violet-700',  text: 'text-violet-100',  sub: 'text-violet-400',  chip: 'bg-violet-800 text-violet-200' },
-  policy: { bg: 'bg-amber-950',   border: 'border-amber-700',   text: 'text-amber-100',   sub: 'text-amber-400',   chip: 'bg-amber-800 text-amber-200' },
+  policy:      { bg: 'bg-amber-950',   border: 'border-amber-700',   text: 'text-amber-100',   sub: 'text-amber-400',   chip: 'bg-amber-800 text-amber-200' },
 }
-
-const chapterLensColors = {
-  scientist:   'bg-emerald-50 border-emerald-200 text-emerald-900',
-  investor:    'bg-blue-50 border-blue-200 text-blue-900',
-  clinician:   'bg-violet-50 border-violet-200 text-violet-900',
-  policy: 'bg-amber-50 border-amber-200 text-amber-900',
-}
-
-// ── Static maps ───────────────────────────────────────────────────────────────
 
 const actMap = {
   0: { act: 1, name: 'Stage 1 — The Problem', color: 'green' },
@@ -86,6 +77,14 @@ const actMap = {
   9: { act: 3, name: 'Stage 3 — The Trade-Off', color: 'amber' },
 }
 
+const stageGroups = [
+  { label: 'Stage 1 — The Problem', chapterIds: [0, 1, 2], color: 'green' },
+  { label: 'Stage 2 — The Trial',   chapterIds: [3, 4, 5], color: 'purple' },
+  { label: 'Stage 3 — The Trade-Off', chapterIds: [6, 7, 8, 9], color: 'amber' },
+]
+
+const stageColors = { green: '#1D9E75', purple: '#534AB7', amber: '#EF9F27' }
+
 const levelStyles = {
   green:  { wrap: 'bg-white border-gray-200', tag: 'bg-green-100 text-green-800',  title: 'text-gray-900', body: 'text-gray-600' },
   yellow: { wrap: 'bg-white border-gray-200', tag: 'bg-yellow-100 text-yellow-800', title: 'text-gray-900', body: 'text-gray-600' },
@@ -98,12 +97,10 @@ const typeStyles = {
   quiz:    'bg-teal-100 text-teal-800',
   data:    'bg-blue-100 text-blue-800',
   summary: 'bg-orange-100 text-orange-800',
-  game: 'bg-pink-100 text-pink-800',
+  game:    'bg-pink-100 text-pink-800',
 }
 
 const levelLabel = { green: 'Foundational', yellow: 'Intermediate', red: 'Advanced' }
-const levelPill  = { green: 'bg-green-100 text-green-800', yellow: 'bg-yellow-100 text-yellow-800', red: 'bg-red-100 text-red-800' }
-const levelPillLabel = { green: 'Clinical/Research', yellow: 'Industry Adjacent', red: 'Deep Industry' }
 const actColors  = { green: 'text-green-700', purple: 'text-purple-700', amber: 'text-yellow-700' }
 
 const takeaways = {
@@ -127,6 +124,36 @@ const takeaways = {
   'c5t2': 'Lipitor is the textbook example of the social contract working as intended — branded, expensive, then generic and essentially free.',
   'c5t4': 'Humira\'s patent thicket delayed biosimilars by years. That\'s a violation of the social contract that cost patients real money and health.',
   'c5t8': 'Price jacking is real and outrageous — but it\'s not representative. Don\'t let the loudest cases distort your understanding of the system.',
+}
+
+// ── localStorage helpers ──────────────────────────────────────────────────────
+
+const STORAGE_KEY = 'biotech_progress'
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    return raw ? JSON.parse(raw) : {}
+  } catch { return {} }
+}
+
+function saveProgress(chapterId, topicIndex) {
+  try {
+    const prev = loadProgress()
+    const updated = { ...prev, lastChapter: chapterId, lastTopic: topicIndex, lastSeen: Date.now() }
+    // Track furthest topic reached per chapter
+    const key = `ch${chapterId}`
+    updated[key] = Math.max(updated[key] || 0, topicIndex)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+  } catch {}
+}
+
+function getChapterCompletion(chapterId, totalTopics) {
+  try {
+    const data = loadProgress()
+    const reached = data[`ch${chapterId}`] || 0
+    return Math.round(((reached + 1) / totalTopics) * 100)
+  } catch { return 0 }
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -201,7 +228,6 @@ function DataBlock({ topic }) {
   )
 }
 
-// Stage Lens Card — dark, elevated, mission-briefing feel
 function StageLensCard({ chapterId, userRole }) {
   const lens = stageLens[chapterId]
   if (!lens || !userRole || !lens[userRole]) return null
@@ -226,23 +252,94 @@ function StageLensCard({ chapterId, userRole }) {
   )
 }
 
-// Chapter Lens Card — light, subtle, chapter-specific framing
 function ChapterLensCard({ chapterId, userRole }) {
   const lens = chapterLens[chapterId]
-  const chapterLensColors = {
-    scientist:   'bg-emerald-50 border-emerald-200 text-emerald-900',
-    investor:    'bg-blue-50 border-blue-200 text-blue-900',
-    clinician:   'bg-violet-50 border-violet-200 text-violet-900',
-    policy:      'bg-amber-50 border-amber-200 text-amber-900',
+  const colors = {
+    scientist: 'bg-emerald-50 border-emerald-200 text-emerald-900',
+    investor:  'bg-blue-50 border-blue-200 text-blue-900',
+    clinician: 'bg-violet-50 border-violet-200 text-violet-900',
+    policy:    'bg-amber-50 border-amber-200 text-amber-900',
   }
   if (!lens || !userRole || !lens[userRole]) return null
-  // Don't show chapter lens on stage-opening chapters (they get the stage lens instead)
   if (stageLens[chapterId]) return null
-  const colorCls = chapterLensColors[userRole] || chapterLensColors.scientist
   return (
-    <div className={`rounded-xl border px-5 py-4 ${colorCls}`}>
+    <div className={`rounded-xl border px-5 py-4 ${colors[userRole] || colors.scientist}`}>
       <p className="text-xs font-bold uppercase tracking-wide mb-1 opacity-60">Your lens for this chapter</p>
       <p className="text-sm leading-relaxed">{lens[userRole]}</p>
+    </div>
+  )
+}
+
+// ── Progress Timeline (sidebar) ───────────────────────────────────────────────
+
+function ProgressTimeline({ currentChapterId, navigate }) {
+  const progress = loadProgress()
+
+  return (
+    <div className="flex flex-col gap-3 mt-1">
+      {stageGroups.map((stage) => {
+        const color = stageColors[stage.color]
+        return (
+          <div key={stage.label}>
+            <p className="text-xs font-bold uppercase tracking-widest mb-2"
+              style={{ color }}>{stage.label.split(' — ')[0]}</p>
+            <div className="flex flex-col gap-1">
+              {stage.chapterIds.map(cid => {
+                const ch = chapters[cid]
+                if (!ch) return null
+                const totalTopics = ch.topics.length
+                const reached = progress[`ch${cid}`] ?? -1
+                const pct = reached >= 0 ? Math.round(((reached + 1) / totalTopics) * 100) : 0
+                const isActive = cid === currentChapterId
+                const isDone = pct === 100
+                return (
+                  <div key={cid}
+                    onClick={() => navigate(`/chapter/${cid}/topic/${Math.max(0, reached)}`)}
+                    className={`flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer transition-all group ${
+                      isActive ? 'bg-gray-100' : 'hover:bg-gray-50'}`}>
+                    {/* Status dot */}
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 text-xs"
+                      style={{
+                        background: isDone ? color : isActive ? color : '#E5E7EB',
+                        color: isDone || isActive ? 'white' : '#9CA3AF',
+                        fontSize: '10px',
+                      }}>
+                      {isDone ? '✓' : cid}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-xs truncate ${isActive ? 'font-semibold text-gray-900' : 'text-gray-500'}`}>
+                        Ch {cid}: {ch.title}
+                      </p>
+                      {pct > 0 && !isDone && (
+                        <div className="h-1 bg-gray-200 rounded-full mt-1 overflow-hidden">
+                          <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: color }} />
+                        </div>
+                      )}
+                    </div>
+                    {isDone && <span className="text-xs text-gray-400 flex-shrink-0">Done</span>}
+                    {!isDone && pct > 0 && <span className="text-xs text-gray-400 flex-shrink-0">{pct}%</span>}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// ── Welcome back banner ───────────────────────────────────────────────────────
+
+function WelcomeBackBanner({ onDismiss }) {
+  return (
+    <div className="mb-5 flex items-start gap-3 bg-teal-50 border border-teal-200 rounded-xl px-5 py-4">
+      <span className="text-teal-500 text-lg mt-0.5">👋</span>
+      <div className="flex-1">
+        <p className="text-sm font-semibold text-teal-800">Welcome back — let's pick up where you left off.</p>
+        <p className="text-xs text-teal-600 mt-0.5">Your progress has been saved. Continue at your own pace.</p>
+      </div>
+      <button onClick={onDismiss} className="text-teal-400 hover:text-teal-600 text-lg leading-none">×</button>
     </div>
   )
 }
@@ -252,9 +349,10 @@ function ChapterLensCard({ chapterId, userRole }) {
 export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
   const { chapterId, topicIndex } = useParams()
   const navigate = useNavigate()
-  const chapter = chapters[parseInt(chapterId)]
+  const chapterIdInt = parseInt(chapterId)
+  const chapter = chapters[chapterIdInt]
   const currentIndex = parseInt(topicIndex)
-  const act = actMap[parseInt(chapterId)] || { act: 1, name: 'Stage 1 — The Problem', color: 'green' }
+  const act = actMap[chapterIdInt] || { act: 1, name: 'Stage 1 — The Problem', color: 'green' }
 
   const isVisible = (topic) => {
     if (topic.level === 'green') return true
@@ -274,39 +372,32 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
   const isStageOpeningChapter = stageLens[chapterId] !== undefined
 
   const [xpEarned, setXpEarned] = useState(false)
-  const [showXpPop, setShowXpPop] = useState(false)
-  const [lastXpGain, setLastXpGain] = useState(0)
+  const [showWelcomeBack, setShowWelcomeBack] = useState(false)
+
+  // Save progress whenever chapter/topic changes
+  useEffect(() => {
+    saveProgress(chapterIdInt, currentIndex)
+  }, [chapterIdInt, currentIndex])
+
+  // Show welcome back banner if returning after >10 minutes
+  useEffect(() => {
+    try {
+      const data = loadProgress()
+      if (data.lastSeen && Date.now() - data.lastSeen > 10 * 60 * 1000) {
+        setShowWelcomeBack(true)
+      }
+    } catch {}
+  }, [])
 
   const handleNext = () => {
     if (!xpEarned) {
       setXp(prev => prev + topic.xp)
-      setLastXpGain(topic.xp)
-      setShowXpPop(true)
-      setTimeout(() => {
-        const zone = document.getElementById('confettiZone')
-        if (!zone) return
-        const colors = ['#EF9F27','#534AB7','#1D9E75','#D4537E','#378ADD','#E24B4A']
-        for (let i = 0; i < 16; i++) {
-          const el = document.createElement('div')
-          el.className = 'confetti-bit'
-          el.style.background = colors[i % colors.length]
-          const angle = (i / 16) * Math.PI * 2
-          const dist = 60 + Math.random() * 50
-          el.style.setProperty('--cx', (Math.cos(angle) * dist) + 'px')
-          el.style.setProperty('--cy', (Math.sin(angle) * dist - 30) + 'px')
-          el.style.setProperty('--cr', (Math.random() * 360) + 'deg')
-          el.style.animationDelay = (Math.random() * 0.15) + 's'
-          zone.appendChild(el)
-          setTimeout(() => el.remove(), 1100)
-        }
-      }, 100)
-      setTimeout(() => setShowXpPop(false), 2000)
       setXpEarned(true)
     }
     setTimeout(() => setXpEarned(false), 100)
     if (isLast) {
       const decisionMap = { 2: '1', 5: '2', 8: '3' }
-      if (decisionMap[parseInt(chapterId)]) navigate(`/decision/${decisionMap[parseInt(chapterId)]}`)
+      if (decisionMap[chapterIdInt]) navigate(`/decision/${decisionMap[chapterIdInt]}`)
       else navigate(`/chapter/${chapterId}/complete`)
     } else {
       navigate(`/chapter/${chapterId}/topic/${currentIndex + 1}`)
@@ -327,35 +418,31 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
           <span className="text-sm font-semibold text-gray-700">← Biotech Unveiled</span>
         </div>
 
+        {/* Chapter progress bar */}
         <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-          <div className="flex justify-between text-sm text-gray-500 mb-2">
-            <span>Chapter progress</span><span>{progress}%</span>
+          <div className="flex justify-between text-xs text-gray-500 mb-2">
+            <span>This chapter</span><span>{progress}%</span>
           </div>
           <div className="h-2 bg-gray-200 rounded-full mb-2">
-            <div className="h-2 bg-green-500 rounded-full transition-all" style={{ width: `${progress}%` }}></div>
+            <div className="h-2 bg-teal-500 rounded-full transition-all" style={{ width: `${progress}%` }}></div>
           </div>
-          <div className="text-sm text-yellow-700 bg-yellow-50 px-2 py-1 rounded-full text-center font-semibold">{xp} XP total</div>
+          <div className="text-xs text-yellow-700 bg-yellow-50 px-2 py-1 rounded-full text-center font-semibold">{xp} XP total</div>
         </div>
 
-        <div className={`text-sm font-semibold px-1 ${actColors[act.color]}`}>{act.name}</div>
-
-        <div className="flex flex-col gap-1 overflow-y-auto flex-1">
-          {visibleTopics.map((t, i) => (
-            <div key={t.id} onClick={() => navigate(`/chapter/${chapterId}/topic/${i}`)}
-              className={`flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer transition-all text-sm ${
-                i === currentIndex ? 'bg-gray-100 text-gray-900 font-semibold'
-                : i < currentIndex ? 'text-gray-400 hover:text-gray-600'
-                : 'text-gray-300 hover:text-gray-500'}`}>
-              <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                i < currentIndex ? 'bg-green-400' : i === currentIndex ? 'bg-blue-400' : 'bg-gray-200'}`}></div>
-              <span className="truncate">{t.title.length > 32 ? t.title.substring(0, 32) + '...' : t.title}</span>
-            </div>
-          ))}
+        {/* Full course progress timeline */}
+        <div className="overflow-y-auto flex-1">
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Course progress</p>
+          <ProgressTimeline currentChapterId={chapterIdInt} navigate={navigate} />
         </div>
       </div>
 
       {/* Main */}
       <div className="flex-1 flex flex-col p-8">
+
+        {/* Welcome back banner */}
+        {showWelcomeBack && (
+          <WelcomeBackBanner onDismiss={() => setShowWelcomeBack(false)} />
+        )}
 
         <div className="flex justify-between items-start mb-5">
           <div>
@@ -363,21 +450,19 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
             <p className="text-sm text-gray-400 mt-0.5">Topic {currentIndex + 1} of {visibleTopics.length}</p>
           </div>
           <span className={`text-sm px-3 py-1 rounded-full font-semibold ${roleColors[userRole]?.chip || 'bg-gray-100 text-gray-700'}`}>
-  {userRole === 'scientist' ? '🔬 Scientist' : userRole === 'investor' ? '📈 Investor' : userRole === 'clinician' ? '🏥 Clinician' : '⚖️ Policy Maker'}
-</span>
+            {userRole === 'scientist' ? '🔬 Scientist' : userRole === 'investor' ? '📈 Investor' : userRole === 'clinician' ? '🏥 Clinician' : '⚖️ Policy Maker'}
+          </span>
         </div>
 
-        {/* Stage Lens — only on first topic of stage-opening chapters (0, 3, 6) */}
         {isFirstTopicOfChapter && isStageOpeningChapter && (
           <div className="mb-5">
-            <StageLensCard chapterId={parseInt(chapterId)} userRole={userRole} />
+            <StageLensCard chapterId={chapterIdInt} userRole={userRole} />
           </div>
         )}
 
-        {/* Chapter Lens — only on first topic of non-stage-opening chapters */}
         {isFirstTopicOfChapter && !isStageOpeningChapter && (
           <div className="mb-5">
-            <ChapterLensCard chapterId={parseInt(chapterId)} userRole={userRole} />
+            <ChapterLensCard chapterId={chapterIdInt} userRole={userRole} />
           </div>
         )}
 
@@ -391,16 +476,13 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
           </div>
 
           <p className="text-sm text-gray-400 italic">{topic.contextNote}</p>
-
           <h2 className={`text-2xl font-semibold leading-snug ${s.title}`}>{topic.title}</h2>
 
-          {/* Intro image */}
           {topic.introImageUrl && (
             <img src={topic.introImageUrl} alt={topic.title} className="rounded-xl"
               style={{ maxHeight: '220px', width: '160px', objectFit: 'cover', objectPosition: 'center top' }} />
           )}
 
-          {/* Content */}
           {topic.content && topic.type !== 'quiz' && (
             <div className={`text-lg leading-relaxed ${s.body}`}>
               {topic.content.split('\n\n').map((para, pi) => (
@@ -413,18 +495,12 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
             </div>
           )}
 
-          {/* Video */}
           {topic.videoUrl && <VideoEmbed url={topic.videoUrl} title={topic.title} />}
-
-          {/* Quiz */}
           {topic.type === 'quiz' && <QuizBlock topic={topic} />}
           {topic.type === 'game' && topic.id === 'c9t5' && <Stakeholder userRole={userRole} />}
           {topic.type === 'game' && topic.id !== 'c9t5' && <ReimbursementRoulette userRole={userRole} />}
-
-          {/* Data */}
           {topic.type === 'data' && <DataBlock topic={topic} />}
 
-          {/* Image(s) with caption */}
           {topic.imageUrl && (
             <div className="flex flex-col gap-4">
               <img src={topic.imageUrl} alt={topic.title} className="w-full rounded-xl"
@@ -439,7 +515,6 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
             </div>
           )}
 
-          {/* Key takeaway */}
           {hasTakeaway && (
             <div className="bg-green-50 rounded-xl p-5 border border-green-100 mt-auto">
               <div className="text-sm text-green-600 font-semibold uppercase tracking-wide mb-2">Key takeaway</div>
@@ -462,24 +537,6 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
           </button>
         </div>
       </div>
-
-      {showXpPop && (
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.35)",zIndex:999,display:"flex",alignItems:"center",justifyContent:"center"}}
-          onClick={() => setShowXpPop(false)}>
-          <div style={{background:"white",borderRadius:"20px",padding:"32px 40px",textAlign:"center",minWidth:"260px",position:"relative",animation:"xpPopIn 0.4s ease-out"}}>
-            <div id="confettiZone" style={{position:"absolute",top:"50%",left:"50%",width:0,height:0}}></div>
-            <div style={{display:"inline-flex",alignItems:"flex-end",gap:"8px",marginBottom:"12px"}}>
-              <span style={{fontSize:"52px",display:"inline-block",animation:"wiggle 0.4s ease-in-out 3"}}>🐭</span>
-              <span style={{fontSize:"32px"}}>🎉</span>
-              <span style={{fontSize:"52px",display:"inline-block",animation:"wiggle 0.4s ease-in-out 3"}}>🐭</span>
-            </div>
-            <div style={{fontSize:"52px",fontWeight:"600",color:"#EF9F27",lineHeight:1}}>+{lastXpGain}</div>
-            <div style={{fontSize:"16px",fontWeight:"500",color:"#374151",marginTop:"4px"}}>XP earned!</div>
-            <div style={{fontSize:"13px",color:"#9ca3af",marginTop:"6px"}}>Squeak squeak! Keep going 🎊</div>
-          </div>
-          <style>{`@keyframes xpPopIn{0%{transform:scale(0.3);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:1}} @keyframes wiggle{0%,100%{transform:rotate(-8deg) scale(1)}50%{transform:rotate(8deg) scale(1.05)}} @keyframes confettiFly{0%{transform:translate(0,0) rotate(0deg);opacity:1}100%{transform:translate(var(--cx),var(--cy)) rotate(var(--cr));opacity:0}} .confetti-bit{position:absolute;width:8px;height:8px;border-radius:2px;animation:confettiFly 0.9s ease-out forwards;pointer-events:none;}`}</style>
-        </div>
-      )}
 
       <AiTutor topicTitle={topic.title} topicContent={topic.content} />
     </div>

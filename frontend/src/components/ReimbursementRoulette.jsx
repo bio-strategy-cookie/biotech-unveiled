@@ -210,7 +210,7 @@ export default function ReimbursementRoulette({ userRole }) {
         rotRef.current = endRot % 360
         setSpinning(false)
         setLandedOn(rounds[currentRound].label.split(' — ')[1])
-        setTimeout(() => { setLandedOn(null); setShowObstacle(true) }, 10000)
+        setTimeout(() => { setLandedOn(null); setShowObstacle(true) }, 6000)
       }
     }
     animRef.current = requestAnimationFrame(animate)

@@ -137,8 +137,8 @@ function WheelCanvas({ rotation }) {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
-    const cx = 160, cy = 160, r = 145
-    ctx.clearRect(0, 0, 320, 320)
+    const cx = 200, cy = 200, r = 185
+    ctx.clearRect(0, 0, 400, 400)
     const n = segments.length
     const slice = (2 * Math.PI) / n
     segments.forEach((s, i) => {
@@ -151,24 +151,24 @@ function WheelCanvas({ rotation }) {
       ctx.fillStyle = s.color
       ctx.fill()
       ctx.strokeStyle = '#fff'
-      ctx.lineWidth = 2
+      ctx.lineWidth = 2.5
       ctx.stroke()
       const mid = start + slice / 2
-      const tx = cx + Math.cos(mid) * 100
-      const ty = cy + Math.sin(mid) * 100
+      const tx = cx + Math.cos(mid) * 128
+      const ty = cy + Math.sin(mid) * 128
       ctx.save()
       ctx.translate(tx, ty)
       ctx.rotate(mid + Math.PI / 2)
-      ctx.fillStyle = 'rgba(255,255,255,0.95)'
-      ctx.font = '500 13px sans-serif'
+      ctx.fillStyle = 'rgba(255,255,255,0.97)'
+      ctx.font = '600 15px sans-serif'
       ctx.textAlign = 'center'
       const lines = s.label.split('\n')
-      lines.forEach((l, li) => ctx.fillText(l, 0, li * 16 - (lines.length - 1) * 8))
+      lines.forEach((l, li) => ctx.fillText(l, 0, li * 18 - (lines.length - 1) * 9))
       ctx.restore()
     })
   }, [rotation])
 
-  return <canvas ref={canvasRef} width={320} height={320} />
+  return <canvas ref={canvasRef} width={400} height={400} />
 }
 
 export default function ReimbursementRoulette({ userRole }) {
@@ -210,7 +210,7 @@ export default function ReimbursementRoulette({ userRole }) {
         rotRef.current = endRot % 360
         setSpinning(false)
         setLandedOn(rounds[currentRound].label.split(' — ')[1])
-        setTimeout(() => { setLandedOn(null); setShowObstacle(true) }, 1500)
+        setTimeout(() => { setLandedOn(null); setShowObstacle(true) }, 10000)
       }
     }
     animRef.current = requestAnimationFrame(animate)
@@ -220,7 +220,7 @@ export default function ReimbursementRoulette({ userRole }) {
     if (choiceMade !== null) return
     const choice = rounds[currentRound].choices[i]
     setAccess(prev => Math.max(0, prev + choice.impact))
-    setResults(prev => [...prev, { label: rounds[currentRound].label.split(' — ')[1], outcome: choice.outcome, impact: choice.impact, choiceText: choice.text, outcomeText: getRoleOutcome(rounds[currentRound].id, i)?.text || choice.desc || '' }])
+    setResults(prev => [...prev, { label: rounds[currentRound].label.split(' — ')[1], outcome: choice.outcome, impact: choice.impact, choiceText: choice.text, choiceIndex: i, roundIndex: currentRound, outcomeText: getRoleOutcome(rounds[currentRound].id, i)?.text || '' }])
     setChoiceMade(i)
   }
 
@@ -309,8 +309,8 @@ export default function ReimbursementRoulette({ userRole }) {
             <div className="flex flex-col items-center gap-5 flex-shrink-0">
               <div className="relative">
                 <WheelCanvas rotation={rotation} />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center text-base">💊</div>
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft:'10px solid transparent', borderRight:'10px solid transparent', borderTop:'22px solid #E24B4A' }}></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center text-xl">💊</div>
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft:'13px solid transparent', borderRight:'13px solid transparent', borderTop:'28px solid #E24B4A' }}></div>
               </div>
               <button onClick={spinWheel} disabled={spinning}
                 className={`px-10 py-3 rounded-full text-sm font-semibold transition-all ${spinning ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-gray-900 text-white hover:bg-gray-700'}`}>
@@ -323,23 +323,36 @@ export default function ReimbursementRoulette({ userRole }) {
                 </div>
               )}
             </div>
-            <div className="flex flex-col gap-4 flex-1">
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-400">The 5 obstacles</p>
+            <div className="flex flex-col gap-3 flex-1">
+              <p className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-1">The 5 obstacles</p>
               {[
                 { color: '#C4956A', label: 'Formulary placement', desc: 'Will the PBM put your drug on the preferred list — and at what cost to your margins?' },
                 { color: '#B07D62', label: 'Prior authorization', desc: 'Insurers require doctors to get approval before prescribing. How burdensome is the process?' },
                 { color: '#C4A96A', label: 'Step therapy', desc: 'Patients must fail on cheaper drugs first before they can access yours.' },
                 { color: '#7D9B7B', label: 'Accumulator programs', desc: 'PBMs pocket your copay assistance instead of passing savings to patients.' },
                 { color: '#A07B8F', label: 'Pharmacy counter', desc: 'After all that — can the patient actually afford their out-of-pocket cost?' },
-              ].map((item, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="w-3 h-3 rounded-full flex-shrink-0 mt-1" style={{ background: item.color }}></div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-800">{item.label}</p>
-                    <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+              ].map((item, i) => {
+                const isActive = landedOn === item.label
+                return (
+                  <div key={i} className="flex items-start gap-3 rounded-xl px-3 py-2 transition-all duration-300"
+                    style={{
+                      background: isActive ? item.color + '22' : 'transparent',
+                      border: isActive ? `2px solid ${item.color}` : '2px solid transparent',
+                      transform: isActive ? 'scale(1.03)' : 'scale(1)',
+                    }}>
+                    <div className="w-4 h-4 rounded-full flex-shrink-0 mt-1" style={{ background: item.color }}></div>
+                    <div>
+                      <p className={`font-semibold ${isActive ? 'text-gray-900 text-base' : 'text-gray-700 text-sm'}`}
+                        style={{ color: isActive ? item.color : undefined }}>
+                        {item.label} {isActive ? '←' : ''}
+                      </p>
+                      <p className={`leading-relaxed mt-0.5 ${isActive ? 'text-sm text-gray-700' : 'text-xs text-gray-500'}`}>
+                        {item.desc}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </div>
@@ -402,19 +415,49 @@ export default function ReimbursementRoulette({ userRole }) {
         <h2 className="text-xl font-semibold text-gray-900 mb-2">Game over</h2>
         <p className="text-sm text-gray-500">Your drug reached <strong className="text-gray-900">{access}%</strong> of eligible patients.</p>
       </div>
-      <div className="flex flex-col gap-3 mb-6">
-        {results.map((r, i) => (
-          <div key={i} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-            <div className="flex justify-between items-start mb-2">
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{r.label}</p>
-              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${r.outcome === 'good' ? 'bg-emerald-100 text-emerald-800' : r.outcome === 'bad' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                {r.impact}% access
-              </span>
+      <div className="flex flex-col gap-4 mb-6">
+        {results.map((r, i) => {
+          const round = rounds[r.roundIndex]
+          const bestChoice = round.choices.reduce((best, c, idx) => c.impact > round.choices[best].impact ? idx : best, 0)
+          return (
+            <div key={i} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <div className="flex justify-between items-start mb-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{r.label}</p>
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${r.outcome === 'good' ? 'bg-emerald-100 text-emerald-800' : r.outcome === 'bad' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                  {r.impact === 0 ? '0%' : `${r.impact}%`} access
+                </span>
+              </div>
+              <div className="flex flex-col gap-2">
+                {round.choices.map((c, ci) => {
+                  const isChosen = ci === r.choiceIndex
+                  const isBest = ci === bestChoice
+                  const roleOut = getRoleOutcome(round.id, ci)
+                  return (
+                    <div key={ci} className={`rounded-xl px-4 py-3 border text-sm ${
+                      isChosen && isBest ? 'border-emerald-400 bg-emerald-50'
+                      : isChosen ? 'border-red-300 bg-red-50'
+                      : isBest ? 'border-emerald-200 bg-emerald-50/50'
+                      : 'border-gray-200 bg-white opacity-60'
+                    }`}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-bold">
+                          {isChosen ? '👆 Your choice' : isBest ? '✅ Best outcome' : ''}
+                        </span>
+                        <span className={`text-xs font-semibold ml-auto ${c.impact === 0 ? 'text-emerald-600' : c.impact > -15 ? 'text-yellow-600' : 'text-red-600'}`}>
+                          {c.impact === 0 ? 'No loss' : `${c.impact}% access`}
+                        </span>
+                      </div>
+                      <p className={`text-sm font-medium mb-1 ${isChosen || isBest ? 'text-gray-900' : 'text-gray-500'}`}>{c.text}</p>
+                      {(isChosen || isBest) && roleOut && (
+                        <p className="text-xs text-gray-500 leading-relaxed mt-1">{roleOut.text}</p>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
-            <p className="text-sm font-medium text-gray-800 mb-2">You chose: {r.choiceText}</p>
-            <p className="text-sm text-gray-600 leading-relaxed">{r.outcomeText}</p>
-          </div>
-        ))}
+          )
+        })}
       </div>
       <p className="text-sm text-gray-600 leading-relaxed mb-6">
         {access > 70 ? "Strong result. Your drug reached most eligible patients — but you gave up significant margin to get there. The question is whether investors will fund the next drug."

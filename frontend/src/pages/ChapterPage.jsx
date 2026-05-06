@@ -11,6 +11,7 @@ import chapter7 from '../data/chapter7Data.js'
 import chapter8 from '../data/chapter8Data.js'
 import chapter9 from '../data/chapter9Data.js'
 import AiTutor from '../components/AiTutor.jsx'
+import ReimbursementRoulette from '../components/ReimbursementRoulette.jsx'
 
 const chapters = { 0: chapter0, 1: chapter1, 2: chapter2, 3: chapter3, 4: chapter4, 5: chapter5, 6: chapter6, 7: chapter7, 8: chapter8, 9: chapter9  }
 
@@ -96,6 +97,7 @@ const typeStyles = {
   quiz:    'bg-teal-100 text-teal-800',
   data:    'bg-blue-100 text-blue-800',
   summary: 'bg-orange-100 text-orange-800',
+  game: 'bg-pink-100 text-pink-800',
 }
 
 const levelLabel = { green: 'Foundational', yellow: 'Intermediate', red: 'Advanced' }
@@ -415,6 +417,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
 
           {/* Quiz */}
           {topic.type === 'quiz' && <QuizBlock topic={topic} />}
+          {topic.type === 'game' && <ReimbursementRoulette userRole={userRole} />}
 
           {/* Data */}
           {topic.type === 'data' && <DataBlock topic={topic} />}

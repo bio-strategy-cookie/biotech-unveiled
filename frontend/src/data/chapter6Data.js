@@ -166,6 +166,15 @@ const chapter6 = {
         ]
       },
       {
+        id: "c6t10b",
+        level: "green",
+        type: "game",
+        contextNote: "Experience the reimbursement system firsthand — 5 obstacles stand between your approved drug and your patients",
+        title: "Reimbursement roulette",
+        content: "Your drug just got FDA approved. Now navigate the real gauntlet — formulary placement, prior auth, step therapy, PBM games, and the pharmacy counter moment. How many patients will actually get your drug?",
+        xp: 30,
+      },
+      {
         id: "c6t11",
         level: "green",
         type: "summary",

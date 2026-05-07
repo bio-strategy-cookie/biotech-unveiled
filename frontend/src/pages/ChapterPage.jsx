@@ -58,10 +58,10 @@ const chapterLens = {
 }
 
 const roleColors = {
-  scientist:   { bg: 'bg-emerald-950', border: 'border-emerald-700', text: 'text-emerald-100', sub: 'text-emerald-400', chip: 'bg-emerald-800 text-emerald-200' },
-  investor:    { bg: 'bg-blue-950',    border: 'border-blue-700',    text: 'text-blue-100',    sub: 'text-blue-400',    chip: 'bg-blue-800 text-blue-200' },
-  clinician:   { bg: 'bg-violet-950',  border: 'border-violet-700',  text: 'text-violet-100',  sub: 'text-violet-400',  chip: 'bg-violet-800 text-violet-200' },
-  policy:      { bg: 'bg-amber-950',   border: 'border-amber-700',   text: 'text-amber-100',   sub: 'text-amber-400',   chip: 'bg-amber-800 text-amber-200' },
+  scientist:   { bg: 'bg-[#EEF2FA]', border: 'border-[#D0DAF0]', text: 'text-[#1A4D8C]', sub: 'text-[#596CA6]', chip: 'bg-[#D0DAF0] text-[#214C91]' },
+  investor:    { bg: 'bg-[#EEF2FA]', border: 'border-[#D0DAF0]', text: 'text-[#1A4D8C]', sub: 'text-[#596CA6]', chip: 'bg-[#D0DAF0] text-[#214C91]' },
+  clinician:   { bg: 'bg-[#FFF5F3]', border: 'border-[#F4C7BE]', text: 'text-[#7A3328]', sub: 'text-[#C45A44]', chip: 'bg-[#F8DCD6] text-[#C45A44]' },
+  policy:      { bg: 'bg-[#FAEEDA]', border: 'border-[#F4D4A0]', text: 'text-[#854F0B]', sub: 'text-[#A0620E]', chip: 'bg-[#FAE3B8] text-[#854F0B]' },
 }
 
 const actMap = {
@@ -83,25 +83,25 @@ const stageGroups = [
   { label: 'Stage 3 — The Trade-Off', chapterIds: [6, 7, 8, 9], color: 'amber' },
 ]
 
-const stageColors = { green: '#1D9E75', purple: '#534AB7', amber: '#EF9F27' }
+const stageColors = { green: '#214C91', purple: '#1A4D8C', amber: '#C45A44' }
 
 const levelStyles = {
-  green:  { wrap: 'bg-white border-gray-200', tag: 'bg-green-100 text-green-800',  title: 'text-gray-900', body: 'text-gray-600' },
-  yellow: { wrap: 'bg-white border-gray-200', tag: 'bg-yellow-100 text-yellow-800', title: 'text-gray-900', body: 'text-gray-600' },
-  red:    { wrap: 'bg-white border-gray-200', tag: 'bg-red-100 text-red-800',       title: 'text-gray-900', body: 'text-gray-600' },
+  green:  { wrap: 'bg-white border-[#D0DAF0]', tag: 'bg-[#EEF2FA] text-[#214C91]',  title: 'text-gray-900', body: 'text-gray-600' },
+  yellow: { wrap: 'bg-white border-[#D0DAF0]', tag: 'bg-[#FFF5F3] text-[#C45A44]', title: 'text-gray-900', body: 'text-gray-600' },
+  red:    { wrap: 'bg-white border-[#D0DAF0]', tag: 'bg-[#F8DCD6] text-[#C45A44]',       title: 'text-gray-900', body: 'text-gray-600' },
 }
 
 const typeStyles = {
-  video:   'bg-purple-100 text-purple-800',
-  reading: 'bg-gray-100 text-gray-700',
-  quiz:    'bg-teal-100 text-teal-800',
-  data:    'bg-blue-100 text-blue-800',
-  summary: 'bg-orange-100 text-orange-800',
-  game:    'bg-pink-100 text-pink-800',
+  video:   'bg-[#EEF2FA] text-[#214C91]',
+  reading: 'bg-[#F6F5F0] text-[#596CA6]',
+  quiz:    'bg-[#D0DAF0] text-[#1A4D8C]',
+  data:    'bg-[#D0DAF0] text-[#1A4D8C]',
+  summary: 'bg-[#FFF5F3] text-[#C45A44]',
+  game:    'bg-[#F8DCD6] text-[#C45A44]',
 }
 
 const levelLabel = { green: 'Foundational', yellow: 'Intermediate', red: 'Advanced' }
-const actColors  = { green: 'text-green-700', purple: 'text-purple-700', amber: 'text-yellow-700' }
+const actColors  = { green: '#214C91', purple: '#534AB7', amber: '#C45A44' }
 
 const takeaways = {
   'c0t1': 'Trikafta transformed cystic fibrosis from a life-shortening disease into a manageable condition — but its $300,000/year price tag raises the central question this course will answer.',
@@ -187,15 +187,15 @@ function QuizBlock({ topic }) {
               const isCorrect  = oi === q.correct
               let cls = 'text-sm px-4 py-3 rounded-xl border text-left transition-all font-medium '
               if (!answered)       cls += 'border-gray-200 bg-white text-gray-700 hover:border-gray-400 cursor-pointer'
-              else if (isCorrect)  cls += 'bg-green-50 border-green-400 text-green-800'
+              else if (isCorrect)  cls += 'bg-[#EEF2FA] border-[#214C91] text-[#1A4D8C]'
               else if (isSelected) cls += 'bg-red-50 border-red-400 text-red-800'
               else                 cls += 'border-gray-100 text-gray-400 bg-white'
               return <button key={oi} className={cls} onClick={() => handleAnswer(qi, oi)}>{opt}</button>
             })}
           </div>
           {answers[qi] !== undefined && (
-            <p className={`text-sm mt-3 font-medium ${answers[qi] === q.correct ? 'text-green-700' : 'text-red-700'}`}>
-              {answers[qi] === q.correct ? '✓ Correct! +' + Math.round(topic.xp / topic.questions.length) + ' XP' : '✗ Not quite — the correct answer is highlighted above.'}
+            <p className={`text-sm mt-3 font-medium ${answers[qi] === q.correct ? 'text-[#214C91]' : 'text-red-700'}`}>
+              {answers[qi] === q.correct ? '✓ Correct! +' + Math.round(topic.xp / topic.questions.length) + ' XP — great work!' : '✗ Not quite — the correct answer is highlighted above.'}
             </p>
           )}
         </div>
@@ -215,7 +215,7 @@ function DataBlock({ topic }) {
             <>
               <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
                 <div className="h-full rounded-full transition-all"
-                  style={{ width: `${stat.fill}%`, background: stat.fill < 20 ? '#E24B4A' : stat.fill < 50 ? '#EF9F27' : '#1D9E75' }} />
+                  style={{ width: `${stat.fill}%`, background: stat.fill < 20 ? '#E24B4A' : stat.fill < 50 ? '#EF9F27' : '#214C91' }} />
               </div>
               <div className="text-sm font-semibold text-gray-700 w-12 text-right">{stat.value}</div>
             </>
@@ -255,10 +255,10 @@ function StageLensCard({ chapterId, userRole }) {
 function ChapterLensCard({ chapterId, userRole }) {
   const lens = chapterLens[chapterId]
   const colors = {
-    scientist: 'bg-emerald-50 border-emerald-200 text-emerald-900',
-    investor:  'bg-blue-50 border-blue-200 text-blue-900',
-    clinician: 'bg-violet-50 border-violet-200 text-violet-900',
-    policy:    'bg-amber-50 border-amber-200 text-amber-900',
+    scientist: 'bg-[#EEF2FA] border-[#D0DAF0] text-[#1A4D8C]',
+    investor:  'bg-[#EEF2FA] border-[#D0DAF0] text-[#1A4D8C]',
+    clinician: 'bg-[#FFF5F3] border-[#F4C7BE] text-[#7A3328]',
+    policy:    'bg-[#FAEEDA] border-[#F4D4A0] text-[#854F0B]',
   }
   if (!lens || !userRole || !lens[userRole]) return null
   if (stageLens[chapterId]) return null
@@ -270,54 +270,125 @@ function ChapterLensCard({ chapterId, userRole }) {
   )
 }
 
-// ── Progress Timeline (sidebar) ───────────────────────────────────────────────
+// ── Progress Timeline — accordion sidebar ────────────────────────────────────
 
-function ProgressTimeline({ currentChapterId, navigate }) {
-  const progress = loadProgress()
+function ProgressTimeline({ currentChapterId, navigate, visibleTopics, currentIndex, userLevel }) {
+  const prog = loadProgress()
+  // Start with the active chapter expanded
+  const [expandedChapter, setExpandedChapter] = useState(currentChapterId)
+
+  const isVisible = (topic) => {
+    if (topic.level === 'green') return true
+    if (topic.level === 'yellow') return userLevel === 'yellow' || userLevel === 'red'
+    if (topic.level === 'red') return userLevel === 'red'
+    return false
+  }
+
+  const toggleChapter = (cid) => {
+    setExpandedChapter(prev => prev === cid ? null : cid)
+  }
 
   return (
-    <div className="flex flex-col gap-3 mt-1">
+    <div className="flex flex-col gap-2 mt-1">
       {stageGroups.map((stage) => {
         const color = stageColors[stage.color]
         return (
           <div key={stage.label}>
-            <p className="text-xs font-bold uppercase tracking-widest mb-2"
+            {/* Stage label */}
+            <p className="text-xs font-bold uppercase tracking-widest mb-2 px-1"
               style={{ color }}>{stage.label.split(' — ')[0]}</p>
-            <div className="flex flex-col gap-1">
+
+            <div className="flex flex-col gap-0.5">
               {stage.chapterIds.map(cid => {
                 const ch = chapters[cid]
                 if (!ch) return null
-                const totalTopics = ch.topics.length
-                const reached = progress[`ch${cid}`] ?? -1
-                const pct = reached >= 0 ? Math.round(((reached + 1) / totalTopics) * 100) : 0
-                const isActive = cid === currentChapterId
+                const chTopics = ch.topics.filter(isVisible)
+                const reached = prog[`ch${cid}`] ?? -1
+                const pct = reached >= 0 ? Math.round(((reached + 1) / chTopics.length) * 100) : 0
+                const isActiveChapter = cid === currentChapterId
                 const isDone = pct === 100
+                const isExpanded = expandedChapter === cid
+
                 return (
-                  <div key={cid}
-                    onClick={() => navigate(`/chapter/${cid}/topic/${Math.max(0, reached)}`)}
-                    className={`flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer transition-all group ${
-                      isActive ? 'bg-gray-100' : 'hover:bg-gray-50'}`}>
-                    {/* Status dot */}
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 text-xs"
-                      style={{
-                        background: isDone ? color : isActive ? color : '#E5E7EB',
-                        color: isDone || isActive ? 'white' : '#9CA3AF',
-                        fontSize: '10px',
-                      }}>
-                      {isDone ? '✓' : cid}
+                  <div key={cid}>
+                    {/* Chapter row — clickable header */}
+                    <div
+                      onClick={() => toggleChapter(cid)}
+                      className="flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer transition-all"
+                      style={{ background: isActiveChapter ? '#EEF2FA' : 'transparent' }}
+                      onMouseEnter={e => { if (!isActiveChapter) e.currentTarget.style.background = '#F6F5F0' }}
+                      onMouseLeave={e => { if (!isActiveChapter) e.currentTarget.style.background = 'transparent' }}
+                    >
+                      {/* Status dot */}
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{
+                          background: isDone ? color : isActiveChapter ? color : '#E5E7EB',
+                          color: isDone || isActiveChapter ? 'white' : '#9CA3AF',
+                          fontSize: '9px',
+                          fontWeight: '600',
+                        }}>
+                        {isDone ? '✓' : cid}
+                      </div>
+
+                      {/* Chapter title + mini progress */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm truncate" style={{
+                          fontWeight: isActiveChapter ? '600' : '400',
+                          color: isActiveChapter ? '#214C91' : '#6b7280'
+                        }}>
+                          {ch.title}
+                        </p>
+                        {pct > 0 && !isDone && (
+                          <div className="h-0.5 bg-gray-200 rounded-full mt-1 overflow-hidden">
+                            <div className="h-full rounded-full" style={{ width: `${pct}%`, background: color }} />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Chevron toggle */}
+                      <span className="text-gray-400 text-sm flex-shrink-0 transition-transform"
+                        style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', display: 'inline-block' }}>
+                        ▾
+                      </span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-xs truncate ${isActive ? 'font-semibold text-gray-900' : 'text-gray-500'}`}>
-                        Ch {cid}: {ch.title}
-                      </p>
-                      {pct > 0 && !isDone && (
-                        <div className="h-1 bg-gray-200 rounded-full mt-1 overflow-hidden">
-                          <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: color }} />
-                        </div>
-                      )}
-                    </div>
-                    {isDone && <span className="text-xs text-gray-400 flex-shrink-0">Done</span>}
-                    {!isDone && pct > 0 && <span className="text-xs text-gray-400 flex-shrink-0">{pct}%</span>}
+
+                    {/* Topics list — expands when chapter is open */}
+                    {isExpanded && (
+                      <div className="ml-4 pl-3 border-l mb-1" style={{ borderColor: color + '40' }}>
+                        {chTopics.map((t, ti) => {
+                          const isCurrentTopic = isActiveChapter && ti === currentIndex
+                          const isReached = ti <= reached
+                          const isCompleted = ti < (isActiveChapter ? currentIndex : reached + 1)
+
+                          return (
+                            <div key={t.id}
+                              onClick={() => navigate(`/chapter/${cid}/topic/${ti}`)}
+                              className="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-all my-0.5"
+                              style={{
+                                background: isCurrentTopic ? '#EEF2FA' : 'transparent',
+                              }}
+                              onMouseEnter={e => { if (!isCurrentTopic) e.currentTarget.style.background = '#F6F5F0' }}
+                              onMouseLeave={e => { if (!isCurrentTopic) e.currentTarget.style.background = 'transparent' }}
+                            >
+                              {/* Topic status indicator */}
+                              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{
+                                background: isCurrentTopic ? color : isCompleted ? color : '#D1D5DB',
+                                opacity: isCompleted ? 1 : 0.5,
+                              }} />
+                              <span className="text-sm truncate leading-snug" style={{
+                                color: isCurrentTopic ? '#214C91' : isReached ? '#374151' : '#9CA3AF',
+                                fontWeight: isCurrentTopic ? '600' : '400',
+                              }}>
+                                {t.title.length > 28 ? t.title.substring(0, 28) + '…' : t.title}
+                              </span>
+                              {isCompleted && !isCurrentTopic && (
+                                <span className="text-sm flex-shrink-0" style={{ color }}>✓</span>
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
                   </div>
                 )
               })}
@@ -333,13 +404,13 @@ function ProgressTimeline({ currentChapterId, navigate }) {
 
 function WelcomeBackBanner({ onDismiss }) {
   return (
-    <div className="mb-5 flex items-start gap-3 bg-teal-50 border border-teal-200 rounded-xl px-5 py-4">
-      <span className="text-teal-500 text-lg mt-0.5">👋</span>
+    <div className="mb-5 flex items-start gap-3 bg-[#F8DCD6] border border-[#F4C7BE] rounded-xl px-5 py-4">
+      <span className="text-[#C45A44] text-lg mt-0.5">👋</span>
       <div className="flex-1">
-        <p className="text-sm font-semibold text-teal-800">Welcome back — let's pick up where you left off.</p>
-        <p className="text-xs text-teal-600 mt-0.5">Your progress has been saved. Continue at your own pace.</p>
+        <p className="text-sm font-semibold text-[#1A4D8C]">Welcome back — let's pick up where you left off.</p>
+        <p className="text-xs text-[#C45A44] mt-0.5">Your progress has been saved. Continue at your own pace.</p>
       </div>
-      <button onClick={onDismiss} className="text-teal-400 hover:text-teal-600 text-lg leading-none">×</button>
+      <button onClick={onDismiss} className="text-[#596CA6] hover:text-[#214C91] text-lg leading-none">×</button>
     </div>
   )
 }
@@ -407,37 +478,43 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
   const handlePrev = () => navigate(`/chapter/${chapterId}/topic/${currentIndex - 1}`)
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen flex">
 
       {/* Sidebar */}
-      <div className="w-64 bg-white border-r border-gray-100 p-5 flex flex-col gap-4 shrink-0">
+      <div className="w-72 border-r p-5 flex flex-col gap-4 shrink-0" style={{ background: "#F6F5F0", borderColor: "#D0DAF0" }}>
         <div className="flex items-center gap-2 pb-3 border-b border-gray-100 cursor-pointer" onClick={() => navigate('/')}>
-          <div className="w-7 h-7 rounded-lg bg-gray-900 flex items-center justify-center">
-            <div className="w-2.5 h-2.5 rounded-full bg-teal-400"></div>
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "#1A4D8C" }}>
+            <div className="w-2.5 h-2.5 rounded-full bg-[#214C91]"></div>
           </div>
           <span className="text-sm font-semibold text-gray-700">← Biotech Unveiled</span>
         </div>
 
         {/* Chapter progress bar */}
-        <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+        <div className="rounded-xl p-3 border" style={{ background: "#EEF2FA", borderColor: "#D0DAF0" }}>
           <div className="flex justify-between text-xs text-gray-500 mb-2">
             <span>This chapter</span><span>{progress}%</span>
           </div>
           <div className="h-2 bg-gray-200 rounded-full mb-2">
-            <div className="h-2 bg-teal-500 rounded-full transition-all" style={{ width: `${progress}%` }}></div>
+            <div className="h-2 rounded-full transition-all" style={{ width: `${progress}%`, background: "#214C91" }}></div>
           </div>
-          <div className="text-xs text-yellow-700 bg-yellow-50 px-2 py-1 rounded-full text-center font-semibold">{xp} XP total</div>
+          <div className="text-xs font-semibold px-2 py-1 rounded-full text-center bg-[#F8DCD6] text-[#C45A44]">{xp} XP total</div>
         </div>
 
         {/* Full course progress timeline */}
         <div className="overflow-y-auto flex-1">
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Course progress</p>
-          <ProgressTimeline currentChapterId={chapterIdInt} navigate={navigate} />
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Course progress</p>
+          <ProgressTimeline
+            currentChapterId={chapterIdInt}
+            navigate={navigate}
+            visibleTopics={visibleTopics}
+            currentIndex={currentIndex}
+            userLevel={userLevel}
+          />
         </div>
       </div>
 
       {/* Main */}
-      <div className="flex-1 flex flex-col p-8">
+      <div className="flex-1 flex flex-col p-8" style={{ background: "#F6F5F0" }}>
 
         {/* Welcome back banner */}
         {showWelcomeBack && (
@@ -472,7 +549,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
           <div className="flex items-center gap-2 flex-wrap">
             <span className={`text-sm font-semibold px-3 py-1 rounded-full ${s.tag}`}>{levelLabel[topic.level]}</span>
             <span className={`text-sm px-3 py-1 rounded-full capitalize font-medium ${typeStyles[topic.type]}`}>{topic.type}</span>
-            <span className="text-sm text-gray-400 ml-auto font-medium">+{topic.xp} XP</span>
+            <span className="text-sm ml-auto font-semibold text-[#C45A44]">+{topic.xp} XP</span>
           </div>
 
           <p className="text-sm text-gray-400 italic">{topic.contextNote}</p>
@@ -516,9 +593,9 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
           )}
 
           {hasTakeaway && (
-            <div className="bg-green-50 rounded-xl p-5 border border-green-100 mt-auto">
-              <div className="text-sm text-green-600 font-semibold uppercase tracking-wide mb-2">Key takeaway</div>
-              <div className="text-base text-green-900 leading-relaxed">{takeaways[topic.id]}</div>
+            <div className="bg-[#F8DCD6] rounded-xl p-5 border border-[#F4C7BE] mt-auto">
+              <div className="text-sm text-[#C45A44] font-semibold uppercase tracking-wide mb-2">Key takeaway</div>
+              <div className="text-base text-[#7A3328] leading-relaxed">{takeaways[topic.id]}</div>
             </div>
           )}
         </div>
@@ -532,7 +609,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
           </button>
           <span className="text-sm text-gray-400 font-medium">{currentIndex + 1} / {visibleTopics.length}</span>
           <button onClick={handleNext}
-            className="px-5 py-3 rounded-xl text-sm font-semibold bg-gray-900 text-white hover:bg-gray-700 transition-all">
+            className="px-5 py-3 rounded-xl text-sm font-semibold text-white transition-all" style={{ background: "#214C91" }} onMouseOver={e=>e.currentTarget.style.background='#1A4D8C'} onMouseOut={e=>e.currentTarget.style.background='#214C91'}>
             {isLast ? 'Complete chapter →' : 'Next →'}
           </button>
         </div>

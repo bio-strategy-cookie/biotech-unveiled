@@ -1,11 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
 
+// NPLB color palette:
+// Navy: #214C91 | Deep cobalt: #1A4D8C | Medium blue: #596CA6
+// Light blue: #EEF2FA | Peach: #F8DCD6 | Peach border: #F4C7BE
+// Peach text: #C45A44 | Cream: #F6F5F0
+
 const segments = [
-  { label: 'Formulary', color: '#C4956A' },
-  { label: 'Prior auth', color: '#B07D62' },
-  { label: 'Step therapy', color: '#C4A96A' },
-  { label: 'Accumulator', color: '#7D9B7B' },
-  { label: 'Pharmacy\ncounter', color: '#A07B8F' },
+  { label: 'Formulary',        color: '#214C91' },
+  { label: 'Prior auth',       color: '#C45A44' },
+  { label: 'Step therapy',     color: '#1A4D8C' },
+  { label: 'Accumulator',      color: '#E4745E' },
+  { label: 'Pharmacy\ncounter', color: '#596CA6' },
 ]
 
 const roleOutcomes = {
@@ -119,13 +124,11 @@ const rounds = [
   { id:'oop', label:'Obstacle 5 — The pharmacy counter', title:'A patient walks away without their drug', desc:"After everything — formulary, prior auth, step therapy — a patient arrives at the pharmacy. Their copay: $420 for a 30-day supply. Monthly income: $3,200. They pause. They put the prescription back.", choices:[{text:'This is the system working as designed',outcome:'bad',impact:-25},{text:'This is why we need OOP cost caps',outcome:'good',impact:-5},{text:'This is why we need price controls',outcome:'partial',impact:-15}]},
 ]
 
-
-
 const roleColors = {
-  scientist:  { bg: '#E4EDE4', text: '#1A3D1A', border: '#7D9B7B' },
-  investor:   { bg: '#DDE6F0', text: '#0F2B42', border: '#7B8FA1' },
-  clinician:  { bg: '#F5EDD9', text: '#3D2E0F', border: '#C4956A' },
-  policy:     { bg: '#F2E0D5', text: '#3D150A', border: '#A07B8F' },
+  scientist:  { bg: '#EEF2FA', text: '#214C91', border: '#D0DAF0' },
+  investor:   { bg: '#EEF2FA', text: '#214C91', border: '#D0DAF0' },
+  clinician:  { bg: '#FFF5F3', text: '#C45A44', border: '#F4C7BE' },
+  policy:     { bg: '#FAEEDA', text: '#854F0B', border: '#F4D4A0' },
 }
 
 const roleLabels = { scientist: '🔬 Scientist', investor: '📈 Investor', clinician: '🏥 Clinician', policy: '⚖️ Policy maker' }
@@ -150,8 +153,8 @@ function WheelCanvas({ rotation }) {
       ctx.closePath()
       ctx.fillStyle = s.color
       ctx.fill()
-      ctx.strokeStyle = '#fff'
-      ctx.lineWidth = 2.5
+      ctx.strokeStyle = '#F6F5F0'
+      ctx.lineWidth = 3
       ctx.stroke()
       const mid = start + slice / 2
       const tx = cx + Math.cos(mid) * 128
@@ -166,6 +169,14 @@ function WheelCanvas({ rotation }) {
       lines.forEach((l, li) => ctx.fillText(l, 0, li * 18 - (lines.length - 1) * 9))
       ctx.restore()
     })
+    // Center circle
+    ctx.beginPath()
+    ctx.arc(cx, cy, 28, 0, 2 * Math.PI)
+    ctx.fillStyle = '#F6F5F0'
+    ctx.fill()
+    ctx.strokeStyle = '#D0DAF0'
+    ctx.lineWidth = 2
+    ctx.stroke()
   }, [rotation])
 
   return <canvas ref={canvasRef} width={400} height={400} />
@@ -194,9 +205,9 @@ export default function ReimbursementRoulette({ userRole }) {
     const extraSpins = 5 * 360
     const startRot = rotRef.current
     const endRot = startRot + extraSpins + ((targetAngle - startRot) % 360 + 360) % 360
-    const duration = 2800
+    const duration = 4000
     let startTime = null
-    const easeOut = t => 1 - Math.pow(1 - t, 3)
+    const easeOut = t => 1 - Math.pow(1 - t, 4)
     const animate = (ts) => {
       if (!startTime) startTime = ts
       const elapsed = ts - startTime
@@ -255,98 +266,119 @@ export default function ReimbursementRoulette({ userRole }) {
     else setRole(null)
   }
 
-  const accessColor = access > 60 ? 'bg-emerald-500' : access > 30 ? 'bg-yellow-500' : 'bg-red-500'
+  const accessColor = access > 60 ? '#214C91' : access > 30 ? '#C45A44' : '#E24B4A'
   const round = rounds[currentRound]
   const rc = role ? roleColors[role] : null
 
+  // ── Intro screen ──
   if (screen === 'intro') return (
-    <div className="rounded-2xl overflow-hidden border border-gray-200">
-      <div className="px-8 pt-8 pb-6" style={{ background: '#E4EDE4' }}>
-        <div className="inline-block text-xs font-semibold px-3 py-1 rounded-full mb-4" style={{ background: '#C5D9C5', color: '#2E5C2E' }}>Reimbursement roulette</div>
-        <h2 className="text-xl font-semibold mb-2" style={{ color: '#1A3D1A' }}>Your drug got FDA approved. Now the real game begins.</h2>
-        <p className="text-sm leading-relaxed" style={{ color: '#3D6B3D' }}>Navigate 5 reimbursement obstacles to get your drug to patients.</p>
-      </div>
-      <div className="bg-white px-8 py-6 text-center">
-      <div className="text-3xl mb-4">💊</div>
-      {!userRole && (
-        <div className="flex flex-wrap gap-2 justify-center mb-6">
-          {['scientist','investor','clinician','policy'].map(r => (
-            <button key={r} onClick={() => setRole(r)}
-              style={role === r ? { borderColor: roleColors[r].border, background: roleColors[r].bg, color: roleColors[r].text, borderWidth: '2px' } : {}}
-              className={`px-4 py-2 rounded-xl border text-sm font-medium transition-all ${role === r ? '' : 'border-gray-200 text-gray-600 hover:border-gray-400'}`}>
-              {roleLabels[r]}
-            </button>
-          ))}
+    <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid #D0DAF0' }}>
+      <div className="px-8 pt-8 pb-6" style={{ background: 'linear-gradient(to bottom, #0f2d5a, #1A4D8C)' }}>
+        <div className="inline-block text-xs font-semibold px-3 py-1 rounded-full mb-4"
+          style={{ background: 'rgba(240,178,166,0.2)', color: '#F0B2A6' }}>
+          Reimbursement Roulette
         </div>
-      )}
-      {userRole && (
-        <p className="text-sm text-gray-500 mb-6">Playing as <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: roleColors[userRole].bg, color: roleColors[userRole].text }}>{roleLabels[userRole]}</span></p>
-      )}
-      <button onClick={() => role && setScreen('game')}
-        className={`px-8 py-3 rounded-xl text-sm font-semibold transition-all ${role ? 'bg-gray-900 text-white hover:bg-gray-700' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}>
-        Start game →
-      </button>
+        <h2 className="text-xl font-semibold mb-2 text-white">Your drug got FDA approved. Now the real game begins.</h2>
+        <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.7)' }}>
+          Navigate 5 reimbursement obstacles to get your drug to patients.
+        </p>
+      </div>
+      <div className="px-8 py-6" style={{ background: '#F6F5F0' }}>
+        <div className="text-3xl mb-4 text-center">💊</div>
+        {!userRole && (
+          <div className="flex flex-wrap gap-2 justify-center mb-6">
+            {['scientist','investor','clinician','policy'].map(r => (
+              <button key={r} onClick={() => setRole(r)}
+                style={role === r
+                  ? { borderColor: roleColors[r].border, background: roleColors[r].bg, color: roleColors[r].text, borderWidth: '2px', borderStyle: 'solid' }
+                  : { borderColor: '#D0DAF0', borderWidth: '2px', borderStyle: 'solid', color: '#596CA6', background: 'white' }}
+                className="px-4 py-2 rounded-xl text-sm font-medium transition-all hover:opacity-80">
+                {roleLabels[r]}
+              </button>
+            ))}
+          </div>
+        )}
+        {userRole && (
+          <p className="text-sm text-gray-500 mb-6 text-center">Playing as <span className="px-2 py-0.5 rounded-full text-xs font-semibold"
+            style={{ background: roleColors[userRole].bg, color: roleColors[userRole].text }}>{roleLabels[userRole]}</span></p>
+        )}
+        <div className="flex justify-center">
+          <button onClick={() => role && setScreen('game')}
+            className="px-8 py-3 rounded-xl text-sm font-semibold transition-all"
+            style={role
+              ? { background: '#214C91', color: 'white' }
+              : { background: '#E5E7EB', color: '#9CA3AF', cursor: 'not-allowed' }}>
+            Start game →
+          </button>
+        </div>
       </div>
     </div>
   )
 
+  // ── Game screen ──
   if (screen === 'game') return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between items-center">
-        <span className="text-sm text-gray-500">Round {currentRound + 1} of {rounds.length}</span>
+        <span className="text-sm font-medium" style={{ color: '#596CA6' }}>Round {currentRound + 1} of {rounds.length}</span>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">Patient access</span>
-          <div className="w-28 h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div className={`h-full rounded-full transition-all duration-700 ${accessColor}`} style={{ width: `${access}%` }}></div>
+          <span className="text-xs" style={{ color: '#596CA6' }}>Patient access</span>
+          <div className="w-28 h-2 rounded-full overflow-hidden" style={{ background: '#D0DAF0' }}>
+            <div className="h-full rounded-full transition-all duration-700" style={{ width: `${access}%`, background: accessColor }}></div>
           </div>
-          <span className="text-sm font-semibold text-gray-700">{access}%</span>
+          <span className="text-sm font-semibold" style={{ color: '#214C91' }}>{access}%</span>
         </div>
       </div>
 
       {!showObstacle && (
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+        <div className="rounded-2xl p-6" style={{ background: 'white', border: '1px solid #D0DAF0' }}>
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="flex flex-col items-center gap-5 flex-shrink-0">
               <div className="relative">
                 <WheelCanvas rotation={rotation} />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center text-xl">💊</div>
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft:'13px solid transparent', borderRight:'13px solid transparent', borderTop:'28px solid #E24B4A' }}></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center text-xl"
+                  style={{ background: '#F6F5F0', border: '2px solid #D0DAF0' }}>💊</div>
+                {/* Pointer arrow in NPLB peach */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-0 h-0"
+                  style={{ borderLeft:'13px solid transparent', borderRight:'13px solid transparent', borderTop:'28px solid #C45A44' }}></div>
               </div>
               <button onClick={spinWheel} disabled={spinning}
-                className={`px-10 py-3 rounded-full text-sm font-semibold transition-all ${spinning ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-gray-900 text-white hover:bg-gray-700'}`}>
+                className="px-10 py-3 rounded-full text-sm font-semibold transition-all"
+                style={spinning
+                  ? { background: '#D0DAF0', color: '#596CA6', cursor: 'not-allowed' }
+                  : { background: '#214C91', color: 'white' }}>
                 {spinning ? 'Spinning...' : 'Spin the wheel'}
               </button>
               {landedOn && (
                 <div className="text-center animate-pulse">
-                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Landed on</p>
-                  <p className="text-base font-semibold text-gray-900">{landedOn}</p>
+                  <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#596CA6' }}>Landed on</p>
+                  <p className="text-base font-semibold" style={{ color: '#214C91' }}>{landedOn}</p>
                 </div>
               )}
             </div>
+
             <div className="flex flex-col gap-3 flex-1">
-              <p className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-1">The 5 obstacles</p>
+              <p className="text-sm font-bold uppercase tracking-widest mb-1" style={{ color: '#596CA6' }}>The 5 obstacles</p>
               {[
-                { color: '#C4956A', label: 'Formulary placement', desc: 'Will the PBM put your drug on the preferred list — and at what cost to your margins?' },
-                { color: '#B07D62', label: 'Prior authorization', desc: 'Insurers require doctors to get approval before prescribing. How burdensome is the process?' },
-                { color: '#C4A96A', label: 'Step therapy', desc: 'Patients must fail on cheaper drugs first before they can access yours.' },
-                { color: '#7D9B7B', label: 'Accumulator programs', desc: 'PBMs pocket your copay assistance instead of passing savings to patients.' },
-                { color: '#A07B8F', label: 'Pharmacy counter', desc: 'After all that — can the patient actually afford their out-of-pocket cost?' },
+                { color: '#214C91', label: 'Formulary placement', desc: 'Will the PBM put your drug on the preferred list — and at what cost to your margins?' },
+                { color: '#C45A44', label: 'Prior authorization', desc: 'Insurers require doctors to get approval before prescribing. How burdensome is the process?' },
+                { color: '#1A4D8C', label: 'Step therapy', desc: 'Patients must fail on cheaper drugs first before they can access yours.' },
+                { color: '#E4745E', label: 'Accumulator programs', desc: 'PBMs pocket your copay assistance instead of passing savings to patients.' },
+                { color: '#596CA6', label: 'Pharmacy counter', desc: 'After all that — can the patient actually afford their out-of-pocket cost?' },
               ].map((item, i) => {
                 const isActive = landedOn === item.label
                 return (
                   <div key={i} className="flex items-start gap-3 rounded-xl px-3 py-2 transition-all duration-300"
                     style={{
-                      background: isActive ? item.color + '22' : 'transparent',
+                      background: isActive ? item.color + '15' : 'transparent',
                       border: isActive ? `2px solid ${item.color}` : '2px solid transparent',
                       transform: isActive ? 'scale(1.03)' : 'scale(1)',
                     }}>
                     <div className="w-4 h-4 rounded-full flex-shrink-0 mt-1" style={{ background: item.color }}></div>
                     <div>
-                      <p className={`font-semibold ${isActive ? 'text-gray-900 text-base' : 'text-gray-700 text-sm'}`}
-                        style={{ color: isActive ? item.color : undefined }}>
+                      <p className="font-semibold" style={{ color: isActive ? item.color : '#374151', fontSize: isActive ? '15px' : '14px' }}>
                         {item.label} {isActive ? '←' : ''}
                       </p>
-                      <p className={`leading-relaxed mt-0.5 ${isActive ? 'text-sm text-gray-700' : 'text-xs text-gray-500'}`}>
+                      <p className="leading-relaxed mt-0.5" style={{ color: '#6B7280', fontSize: isActive ? '13px' : '12px' }}>
                         {item.desc}
                       </p>
                     </div>
@@ -360,47 +392,59 @@ export default function ReimbursementRoulette({ userRole }) {
 
       {showObstacle && (
         <div className="flex flex-col gap-3">
-          <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">{round.label}</p>
-            <h3 className="text-base font-semibold text-gray-900 mb-3">{round.title}</h3>
-            <p className="text-sm text-gray-600 leading-relaxed mb-5">{round.desc}</p>
+          {/* Question card */}
+          <div className="rounded-2xl p-6" style={{ background: 'white', border: '1px solid #D0DAF0' }}>
+            <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#596CA6' }}>{round.label}</p>
+            <h3 className="text-base font-semibold mb-3" style={{ color: '#214C91' }}>{round.title}</h3>
+            <p className="text-sm leading-relaxed mb-5" style={{ color: '#4B5563' }}>{round.desc}</p>
             <div className="flex flex-col gap-2">
               {round.choices.map((c, i) => (
                 <button key={i} onClick={() => makeChoice(i)} disabled={choiceMade !== null}
-                  className={`text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all ${
-                    choiceMade === null ? 'border-gray-200 text-gray-700 hover:border-gray-400 hover:bg-gray-50 cursor-pointer'
-                    : choiceMade === i
-                      ? c.outcome === 'bad' ? 'border-red-400 bg-red-50 text-red-800' : 'border-emerald-400 bg-emerald-50 text-emerald-800'
-                      : 'border-gray-100 text-gray-300 cursor-default'
-                  }`}>
+                  className="text-left px-4 py-3 rounded-xl text-sm font-medium transition-all"
+                  style={
+                    choiceMade === null
+                      ? { border: '1px solid #D0DAF0', color: '#214C91', background: 'white', cursor: 'pointer' }
+                      : choiceMade === i
+                        ? c.outcome === 'bad'
+                          ? { border: '2px solid #E24B4A', background: '#FEF2F2', color: '#7F1D1D' }
+                          : { border: '2px solid #214C91', background: '#EEF2FA', color: '#214C91' }
+                        : { border: '1px solid #E5E7EB', color: '#D1D5DB', background: 'white' }
+                  }
+                  onMouseEnter={e => { if (choiceMade === null) { e.currentTarget.style.background = '#EEF2FA'; e.currentTarget.style.borderColor = '#214C91' } }}
+                  onMouseLeave={e => { if (choiceMade === null) { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#D0DAF0' } }}>
                   {c.text}
                 </button>
               ))}
             </div>
           </div>
 
+          {/* Role outcome card */}
           {choiceMade !== null && (() => {
             const roleOut = getRoleOutcome(round.id, choiceMade)
             return (
-            <div className="bg-white rounded-2xl border border-gray-200 p-6">
-              {roleOut ? (
-                <>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-bold uppercase tracking-widest px-2 py-1 rounded-full" style={{ background: rc?.bg, color: rc?.text }}>{roleLabels[role]}</span>
-                  </div>
-                  <p className="text-base font-semibold text-gray-900 mb-2">{roleOut.title}</p>
-                  <p className="text-sm text-gray-600 leading-relaxed mb-4">{roleOut.text}</p>
-                </>
-              ) : (
-                <>
-                  <p className="text-base font-semibold text-gray-900 mb-2">{round.choices[choiceMade].title}</p>
-                  <p className="text-sm text-gray-600 leading-relaxed mb-4">{round.choices[choiceMade].desc}</p>
-                </>
-              )}
-              <button onClick={nextRound} className="px-5 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-700 transition-all">
-                {currentRound + 1 >= rounds.length ? 'See results →' : 'Next obstacle →'}
-              </button>
-            </div>
+              <div className="rounded-2xl p-6" style={{ background: '#EEF2FA', border: '1px solid #D0DAF0' }}>
+                {roleOut ? (
+                  <>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs font-bold uppercase tracking-widest px-2 py-1 rounded-full"
+                        style={{ background: rc?.bg, color: rc?.text, border: `1px solid ${rc?.border}` }}>
+                        {roleLabels[role]}
+                      </span>
+                    </div>
+                    <p className="text-base font-semibold mb-2" style={{ color: '#214C91' }}>{roleOut.title}</p>
+                    <p className="text-sm leading-relaxed mb-4" style={{ color: '#374151' }}>{roleOut.text}</p>
+                  </>
+                ) : (
+                  <p className="text-sm leading-relaxed mb-4" style={{ color: '#374151' }}>{round.choices[choiceMade].text}</p>
+                )}
+                <button onClick={nextRound}
+                  className="px-5 py-2.5 text-sm font-semibold rounded-xl text-white transition-all"
+                  style={{ background: '#214C91' }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#1A4D8C'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#214C91'}>
+                  {currentRound + 1 >= rounds.length ? 'See results →' : 'Next obstacle →'}
+                </button>
+              </div>
             )
           })()}
         </div>
@@ -408,22 +452,29 @@ export default function ReimbursementRoulette({ userRole }) {
     </div>
   )
 
+  // ── End screen ──
   if (screen === 'end') return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-8">
+    <div className="rounded-2xl p-8" style={{ background: 'white', border: '1px solid #D0DAF0' }}>
       <div className="text-center mb-6">
         <div className="text-4xl mb-3">{access > 70 ? '✅' : access > 40 ? '⚠️' : '❌'}</div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Game over</h2>
-        <p className="text-sm text-gray-500">Your drug reached <strong className="text-gray-900">{access}%</strong> of eligible patients.</p>
+        <h2 className="text-xl font-semibold mb-2" style={{ color: '#214C91' }}>Game over</h2>
+        <p className="text-sm" style={{ color: '#596CA6' }}>Your drug reached <strong style={{ color: '#214C91' }}>{access}%</strong> of eligible patients.</p>
       </div>
+
       <div className="flex flex-col gap-4 mb-6">
         {results.map((r, i) => {
           const round = rounds[r.roundIndex]
           const bestChoice = round.choices.reduce((best, c, idx) => c.impact > round.choices[best].impact ? idx : best, 0)
           return (
-            <div key={i} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+            <div key={i} className="rounded-xl p-4" style={{ background: '#F6F5F0', border: '1px solid #D0DAF0' }}>
               <div className="flex justify-between items-start mb-3">
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{r.label}</p>
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${r.outcome === 'good' ? 'bg-emerald-100 text-emerald-800' : r.outcome === 'bad' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#596CA6' }}>{r.label}</p>
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                  style={r.outcome === 'good'
+                    ? { background: '#EEF2FA', color: '#214C91' }
+                    : r.outcome === 'bad'
+                      ? { background: '#FEF2F2', color: '#991B1B' }
+                      : { background: '#F8DCD6', color: '#C45A44' }}>
                   {r.impact === 0 ? '0%' : `${r.impact}%`} access
                 </span>
               </div>
@@ -433,23 +484,25 @@ export default function ReimbursementRoulette({ userRole }) {
                   const isBest = ci === bestChoice
                   const roleOut = getRoleOutcome(round.id, ci)
                   return (
-                    <div key={ci} className={`rounded-xl px-4 py-3 border text-sm ${
-                      isChosen && isBest ? 'border-emerald-400 bg-emerald-50'
-                      : isChosen ? 'border-red-300 bg-red-50'
-                      : isBest ? 'border-emerald-200 bg-emerald-50/50'
-                      : 'border-gray-200 bg-white opacity-60'
-                    }`}>
+                    <div key={ci} className="rounded-xl px-4 py-3 text-sm"
+                      style={
+                        isChosen && isBest ? { border: '1px solid #214C91', background: '#EEF2FA' }
+                        : isChosen ? { border: '1px solid #E24B4A', background: '#FEF2F2' }
+                        : isBest ? { border: '1px solid #D0DAF0', background: '#F6F5F0' }
+                        : { border: '1px solid #F3F4F6', background: 'white', opacity: 0.5 }
+                      }>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-bold">
+                        <span className="text-xs font-bold" style={{ color: '#214C91' }}>
                           {isChosen ? '👆 Your choice' : isBest ? '✅ Best outcome' : ''}
                         </span>
-                        <span className={`text-xs font-semibold ml-auto ${c.impact === 0 ? 'text-emerald-600' : c.impact > -15 ? 'text-yellow-600' : 'text-red-600'}`}>
+                        <span className="text-xs font-semibold ml-auto"
+                          style={{ color: c.impact === 0 ? '#214C91' : c.impact > -15 ? '#C45A44' : '#991B1B' }}>
                           {c.impact === 0 ? 'No loss' : `${c.impact}% access`}
                         </span>
                       </div>
-                      <p className={`text-sm font-medium mb-1 ${isChosen || isBest ? 'text-gray-900' : 'text-gray-500'}`}>{c.text}</p>
+                      <p className="text-sm font-medium mb-1" style={{ color: isChosen || isBest ? '#214C91' : '#6B7280' }}>{c.text}</p>
                       {(isChosen || isBest) && roleOut && (
-                        <p className="text-xs text-gray-500 leading-relaxed mt-1">{roleOut.text}</p>
+                        <p className="text-xs leading-relaxed mt-1" style={{ color: '#596CA6' }}>{roleOut.text}</p>
                       )}
                     </div>
                   )
@@ -459,12 +512,19 @@ export default function ReimbursementRoulette({ userRole }) {
           )
         })}
       </div>
-      <p className="text-sm text-gray-600 leading-relaxed mb-6">
-        {access > 70 ? "Strong result. Your drug reached most eligible patients — but you gave up significant margin to get there. The question is whether investors will fund the next drug."
-        : access > 40 ? "A mixed outcome. Your drug is reaching some patients, but many who need it can't access it — not because the drug doesn't work, but because the reimbursement system got in the way."
-        : "The system failed patients. Your drug works. It's approved. And most eligible patients can't get it. Not because of the science. Not because of the price. Because of how insurance is designed."}
+
+      <p className="text-sm leading-relaxed mb-6" style={{ color: '#374151' }}>
+        {access > 70
+          ? "Strong result. Your drug reached most eligible patients — but you gave up significant margin to get there. The question is whether investors will fund the next drug."
+          : access > 40
+          ? "A mixed outcome. Your drug is reaching some patients, but many who need it can't access it — not because the drug doesn't work, but because the reimbursement system got in the way."
+          : "The system failed patients. Your drug works. It's approved. And most eligible patients can't get it. Not because of the science. Not because of the price. Because of how insurance is designed."}
       </p>
-      <button onClick={restart} className="px-5 py-2.5 border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition-all">
+      <button onClick={restart}
+        className="px-5 py-2.5 text-sm font-semibold rounded-xl transition-all"
+        style={{ border: '1px solid #D0DAF0', color: '#214C91', background: 'white' }}
+        onMouseEnter={e => e.currentTarget.style.background = '#EEF2FA'}
+        onMouseLeave={e => e.currentTarget.style.background = 'white'}>
         Play again
       </button>
     </div>

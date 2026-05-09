@@ -13,6 +13,7 @@ import chapter9 from '../data/chapter9Data.js'
 import AiTutor from '../components/AiTutor.jsx'
 import ReimbursementRoulette from '../components/ReimbursementRoulette.jsx'
 import Stakeholder from '../components/Stakeholder.jsx'
+import Certificate from '../components/Certificate.jsx'
 
 const chapters = { 0: chapter0, 1: chapter1, 2: chapter2, 3: chapter3, 4: chapter4, 5: chapter5, 6: chapter6, 7: chapter7, 8: chapter8, 9: chapter9 }
 
@@ -169,37 +170,109 @@ function VideoEmbed({ url, title }) {
   )
 }
 
-function QuizBlock({ topic }) {
+function QuizBlock({ topic, isFinalExam = false, onPass }) {
   const [answers, setAnswers] = useState({})
+  const [submitted, setSubmitted] = useState(false)
+
   const handleAnswer = (qi, oi) => {
-    if (answers[qi] !== undefined) return
+    if (submitted || answers[qi] !== undefined) return
     setAnswers(prev => ({ ...prev, [qi]: oi }))
   }
+
+  const allAnswered = topic.questions && Object.keys(answers).length === topic.questions.length
+
+  const handleSubmit = () => {
+    if (!allAnswered) return
+    setSubmitted(true)
+    if (isFinalExam) {
+      const correct = topic.questions.filter((q, qi) => answers[qi] === q.correct).length
+      const pct = Math.round((correct / topic.questions.length) * 100)
+      if (pct >= 85 && onPass) setTimeout(() => onPass(), 2000)
+    }
+  }
+
+  const score = submitted && isFinalExam
+    ? Math.round((topic.questions.filter((q, qi) => answers[qi] === q.correct).length / topic.questions.length) * 100)
+    : null
+
   return (
     <div className="flex flex-col gap-4">
       {topic.questions?.map((q, qi) => (
-        <div key={qi} className="bg-gray-50 rounded-xl p-5 border border-gray-100">
-          <p className="text-base font-semibold text-gray-900 mb-3">{q.question}</p>
+        <div key={qi} className="rounded-xl p-5 border" style={{ background: '#F6F5F0', borderColor: '#D0DAF0' }}>
+          <p className="text-base font-semibold mb-3" style={{ color: '#214C91' }}>{q.question}</p>
           <div className="flex flex-col gap-2">
             {q.options.map((opt, oi) => {
-              const answered = answers[qi] !== undefined
+              const answered = submitted || answers[qi] !== undefined
               const isSelected = answers[qi] === oi
-              const isCorrect  = oi === q.correct
+              const isCorrect = oi === q.correct
+              let style = {}
               let cls = 'text-sm px-4 py-3 rounded-xl border text-left transition-all font-medium '
-              if (!answered)       cls += 'border-gray-200 bg-white text-gray-700 hover:border-gray-400 cursor-pointer'
-              else if (isCorrect)  cls += 'bg-[#EEF2FA] border-[#214C91] text-[#1A4D8C]'
-              else if (isSelected) cls += 'bg-red-50 border-red-400 text-red-800'
-              else                 cls += 'border-gray-100 text-gray-400 bg-white'
-              return <button key={oi} className={cls} onClick={() => handleAnswer(qi, oi)}>{opt}</button>
+              if (!answered) {
+                cls += 'cursor-pointer'
+                style = { border: '1px solid #D0DAF0', color: '#214C91', background: 'white' }
+              } else if (submitted && isCorrect) {
+                style = { border: '2px solid #214C91', background: '#EEF2FA', color: '#214C91' }
+              } else if (submitted && isSelected && !isCorrect) {
+                style = { border: '2px solid #E24B4A', background: '#FEF2F2', color: '#991B1B' }
+              } else if (!submitted && isSelected) {
+                style = { border: '2px solid #214C91', background: '#EEF2FA', color: '#214C91' }
+              } else {
+                style = { border: '1px solid #E5E7EB', color: '#9CA3AF', background: 'white' }
+              }
+              return (
+                <button key={oi} className={cls} style={style}
+                  onClick={() => handleAnswer(qi, oi)}>
+                  {opt}
+                </button>
+              )
             })}
           </div>
-          {answers[qi] !== undefined && (
-            <p className={`text-sm mt-3 font-medium ${answers[qi] === q.correct ? 'text-[#214C91]' : 'text-red-700'}`}>
-              {answers[qi] === q.correct ? '✓ Correct! +' + Math.round(topic.xp / topic.questions.length) + ' XP — great work!' : '✗ Not quite — the correct answer is highlighted above.'}
+          {!isFinalExam && answers[qi] !== undefined && (
+            <p className="text-sm mt-3 font-medium"
+              style={{ color: answers[qi] === q.correct ? '#214C91' : '#991B1B' }}>
+              {answers[qi] === q.correct
+                ? `✓ Correct! +${Math.round(topic.xp / topic.questions.length)} XP`
+                : '✗ Not quite — the correct answer is highlighted above.'}
             </p>
           )}
         </div>
       ))}
+
+      {/* Final exam submit button */}
+      {isFinalExam && !submitted && (
+        <button onClick={handleSubmit} disabled={!allAnswered}
+          className="w-full py-4 rounded-xl text-base font-semibold transition-all mt-2"
+          style={allAnswered
+            ? { background: '#214C91', color: 'white' }
+            : { background: '#D0DAF0', color: '#596CA6', cursor: 'not-allowed' }}>
+          {allAnswered ? 'Submit exam →' : `Answer all questions to submit (${Object.keys(answers).length}/${topic.questions?.length})`}
+        </button>
+      )}
+
+      {/* Final exam result */}
+      {isFinalExam && submitted && (
+        <div className="rounded-2xl p-6 text-center" style={{
+          background: score >= 85 ? '#EEF2FA' : '#FFF5F3',
+          border: `2px solid ${score >= 85 ? '#214C91' : '#F4C7BE'}`
+        }}>
+          <div className="text-4xl mb-3">{score >= 85 ? '🎉' : '📚'}</div>
+          <p className="text-xl font-semibold mb-2" style={{ color: score >= 85 ? '#214C91' : '#C45A44' }}>
+            {score >= 85 ? 'Congratulations — you passed!' : 'Not quite — keep studying!'}
+          </p>
+          <p className="text-sm mb-1" style={{ color: '#596CA6' }}>
+            {score >= 85
+              ? 'You scored 85% or higher. Your certificate is being prepared...'
+              : `You need 85% to pass. Review the highlighted answers and try again.`}
+          </p>
+          {score < 85 && (
+            <button onClick={() => { setAnswers({}); setSubmitted(false) }}
+              className="mt-4 px-6 py-2.5 rounded-xl text-sm font-semibold text-white"
+              style={{ background: '#214C91' }}>
+              Retake exam →
+            </button>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -444,6 +517,9 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
 
   const [xpEarned, setXpEarned] = useState(false)
   const [showWelcomeBack, setShowWelcomeBack] = useState(false)
+  const [showCertificate, setShowCertificate] = useState(false)
+
+  const isFinalExam = topic.id === 'c9t6'
 
   // Save progress whenever chapter/topic changes
   useEffect(() => {
@@ -476,6 +552,11 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
   }
 
   const handlePrev = () => navigate(`/chapter/${chapterId}/topic/${currentIndex - 1}`)
+
+  // Show certificate full screen
+  if (showCertificate) {
+    return <Certificate onBack={() => setShowCertificate(false)} />
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -573,7 +654,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
           )}
 
           {topic.videoUrl && <VideoEmbed url={topic.videoUrl} title={topic.title} />}
-          {topic.type === 'quiz' && <QuizBlock topic={topic} />}
+          {topic.type === 'quiz' && <QuizBlock topic={topic} isFinalExam={isFinalExam} onPass={() => setShowCertificate(true)} />}
           {topic.type === 'game' && topic.id === 'c9t5' && <Stakeholder userRole={userRole} />}
           {topic.type === 'game' && topic.id !== 'c9t5' && <ReimbursementRoulette userRole={userRole} />}
           {topic.type === 'data' && <DataBlock topic={topic} />}
@@ -608,10 +689,12 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
             ← Previous
           </button>
           <span className="text-sm text-gray-400 font-medium">{currentIndex + 1} / {visibleTopics.length}</span>
-          <button onClick={handleNext}
-            className="px-5 py-3 rounded-xl text-sm font-semibold text-white transition-all" style={{ background: "#214C91" }} onMouseOver={e=>e.currentTarget.style.background='#1A4D8C'} onMouseOut={e=>e.currentTarget.style.background='#214C91'}>
-            {isLast ? 'Complete chapter →' : 'Next →'}
-          </button>
+          {!isFinalExam && (
+            <button onClick={handleNext}
+              className="px-5 py-3 rounded-xl text-sm font-semibold text-white transition-all" style={{ background: "#214C91" }} onMouseOver={e=>e.currentTarget.style.background='#1A4D8C'} onMouseOut={e=>e.currentTarget.style.background='#214C91'}>
+              {isLast ? 'Complete chapter →' : 'Next →'}
+            </button>
+          )}
         </div>
       </div>
 

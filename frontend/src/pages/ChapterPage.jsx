@@ -159,6 +159,13 @@ function getChapterCompletion(chapterId, totalTopics) {
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
+function parseBold(text) {
+  if (!text) return null
+  return text.split(/\*\*(.*?)\*\*/).map((part, i) =>
+    i % 2 === 1 ? <strong key={i} className="font-semibold text-gray-900">{part}</strong> : part
+  )
+}
+
 function VideoEmbed({ url, title }) {
   if (!url) return null
   return (
@@ -344,7 +351,119 @@ function ChapterLensCard({ chapterId, userRole }) {
 }
 
 // ── Progress Timeline — accordion sidebar ────────────────────────────────────
-
+function GuessBlock({ topic }) {
+  const cfg = topic.guessConfig
+  if (!cfg) return null
+ 
+  const [selected, setSelected] = useState(null)
+  const [revealed, setRevealed] = useState(false)
+ 
+  const handlePick = (idx) => {
+    if (selected !== null) return
+    setSelected(idx)
+    setTimeout(() => setRevealed(true), 550)
+  }
+ 
+  const getOptStyle = (idx) => {
+    if (selected === null) return {
+      background: 'white',
+      border: '0.5px solid #D0DAF0',
+      color: '#214C91',
+      cursor: 'pointer',
+    }
+    const isCorrect = idx === cfg.correctIndex
+    const isSelected = idx === selected
+    if (isSelected && cfg.options[idx].result === 'close') return {
+      background: '#EAF3DE', border: '1.5px solid #97C459', color: '#173404',
+      cursor: 'default',
+    }
+    if (isSelected && cfg.options[idx].result === 'wrong') return {
+      background: '#FCEBEB', border: '1.5px solid #F09595', color: '#501313',
+      cursor: 'default',
+    }
+    if (!isSelected && isCorrect) return {
+      background: '#EAF3DE', border: '1.5px solid #97C459', color: '#173404',
+      cursor: 'default',
+    }
+    return {
+      background: 'white', border: '0.5px solid #E5E7EB',
+      color: '#9CA3AF', opacity: 0.5, cursor: 'default',
+    }
+  }
+ 
+  const feedbackText = selected !== null
+    ? (cfg.options[selected].result === 'close' ? cfg.feedbackClose : cfg.feedbackWrong)
+    : null
+ 
+  const feedbackStyle = selected !== null && cfg.options[selected].result === 'close'
+    ? { background: '#EAF3DE', color: '#173404' }
+    : { background: '#FCEBEB', color: '#501313' }
+ 
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Question */}
+      <div>
+        <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#596CA6' }}>
+          Before we begin
+        </p>
+        <p className="text-lg font-semibold mb-1" style={{ color: '#214C91' }}>{cfg.question}</p>
+        <p className="text-sm" style={{ color: '#596CA6' }}>{cfg.instruction}</p>
+      </div>
+ 
+      {/* Options */}
+      <div className="flex flex-col gap-2">
+        {cfg.options.map((opt, idx) => (
+          <button
+            key={idx}
+            onClick={() => handlePick(idx)}
+            className="w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 transition-all"
+            style={{ ...getOptStyle(idx), fontSize: '15px', fontWeight: '500' }}
+          >
+            <span className="text-xs font-bold px-2 py-1 rounded-full flex-shrink-0"
+              style={{ background: 'rgba(33,76,145,0.08)', color: '#596CA6' }}>
+              {opt.label}
+            </span>
+            {opt.value}
+          </button>
+        ))}
+      </div>
+ 
+      {/* Feedback message */}
+      {feedbackText && (
+        <p className="text-sm font-medium px-4 py-3 rounded-xl" style={feedbackStyle}>
+          {feedbackText}
+        </p>
+      )}
+ 
+      {/* Reveal */}
+      {revealed && (
+        <div className="rounded-xl overflow-hidden" style={{ border: '0.5px solid #D0DAF0' }}>
+          <div className="px-6 py-5" style={{ background: 'white' }}>
+            <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#596CA6' }}>
+              {cfg.revealSource}
+            </p>
+            <p className="text-4xl font-semibold mb-0.5" style={{ color: '#214C91' }}>
+              {cfg.revealStat}
+            </p>
+          </div>
+          <div className="px-6 py-4" style={{ background: '#F6F5F0', borderTop: '0.5px solid #D0DAF0' }}>
+            <p className="text-sm leading-relaxed" style={{ color: '#374151' }}>
+              {cfg.revealBody.split('. ').map((sentence, i, arr) => {
+                // Bold the first sentence for emphasis
+                if (i === 0) return (
+                  <span key={i}>
+                    <strong style={{ color: '#214C91', fontWeight: '600' }}>{sentence}.</strong>{' '}
+                  </span>
+                )
+                return <span key={i}>{sentence}{i < arr.length - 1 ? '. ' : ''}</span>
+              })}
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 function ProgressTimeline({ currentChapterId, navigate, visibleTopics, currentIndex, userLevel }) {
   const prog = loadProgress()
   // Start with the active chapter expanded
@@ -368,7 +487,7 @@ function ProgressTimeline({ currentChapterId, navigate, visibleTopics, currentIn
         return (
           <div key={stage.label}>
             {/* Stage label */}
-            <p className="text-xs font-bold uppercase tracking-widest mb-2 px-1"
+            <p className="text-sm font-bold uppercase tracking-widest mb-2 px-1"
               style={{ color }}>{stage.label.split(' — ')[0]}</p>
 
             <div className="flex flex-col gap-0.5">
@@ -405,7 +524,7 @@ function ProgressTimeline({ currentChapterId, navigate, visibleTopics, currentIn
 
                       {/* Chapter title + mini progress */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm truncate" style={{
+                        <p className="text-base truncate" style={{
                           fontWeight: isActiveChapter ? '600' : '400',
                           color: isActiveChapter ? '#214C91' : '#6b7280'
                         }}>
@@ -448,7 +567,7 @@ function ProgressTimeline({ currentChapterId, navigate, visibleTopics, currentIn
                                 background: isCurrentTopic ? color : isCompleted ? color : '#D1D5DB',
                                 opacity: isCompleted ? 1 : 0.5,
                               }} />
-                              <span className="text-sm truncate leading-snug" style={{
+                              <span className="text-base truncate leading-snug" style={{
                                 color: isCurrentTopic ? '#214C91' : isReached ? '#374151' : '#9CA3AF',
                                 fontWeight: isCurrentTopic ? '600' : '400',
                               }}>
@@ -518,12 +637,16 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
   const [xpEarned, setXpEarned] = useState(false)
   const [showWelcomeBack, setShowWelcomeBack] = useState(false)
   const [showCertificate, setShowCertificate] = useState(false)
+  const [deepDiveOpen, setDeepDiveOpen] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const isFinalExam = topic.id === 'c9t6'
 
   // Save progress whenever chapter/topic changes
   useEffect(() => {
     saveProgress(chapterIdInt, currentIndex)
+    setDeepDiveOpen(false)
+    setDrawerOpen(false)
   }, [chapterIdInt, currentIndex])
 
   // Show welcome back banner if returning after >10 minutes
@@ -562,7 +685,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
     <div className="min-h-screen flex">
 
       {/* Sidebar */}
-      <div className="w-72 border-r p-5 flex flex-col gap-4 shrink-0" style={{ background: "#F6F5F0", borderColor: "#D0DAF0" }}>
+      <div className="w-80 border-r p-5 flex flex-col gap-4 shrink-0" style={{ background: "#F6F5F0", borderColor: "#D0DAF0" }}>
         <div className="flex items-center gap-2 pb-3 border-b border-gray-100 cursor-pointer" onClick={() => navigate('/')}>
           <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "#1A4D8C" }}>
             <div className="w-2.5 h-2.5 rounded-full bg-[#214C91]"></div>
@@ -636,48 +759,270 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
           <p className="text-sm text-gray-400 italic">{topic.contextNote}</p>
           <h2 className={`text-2xl font-semibold leading-snug ${s.title}`}>{topic.title}</h2>
 
-          {topic.introImageUrl && (
-            <img src={topic.introImageUrl} alt={topic.title} className="rounded-xl"
-              style={{ maxHeight: '220px', width: '160px', objectFit: 'cover', objectPosition: 'center top' }} />
+          {/* Core concept — shown before content, gives reader a frame */}
+          {topic.coreConcept && (
+            <div className="flex items-start gap-3 rounded-xl px-5 py-4" style={{ background: '#214C91' }}>
+              <div className="text-white text-xl flex-shrink-0 mt-0.5">🎯</div>
+              <div>
+                <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.6)' }}>The core idea</div>
+                <p className="text-base font-medium leading-relaxed text-white">{parseBold(topic.coreConcept)}</p>
+              </div>
+            </div>
           )}
 
-          {topic.content && topic.type !== 'quiz' && (
-            <div className={`text-lg leading-relaxed ${s.body}`}>
-              {topic.content.split('\n\n').map((para, pi) => (
-                <p key={pi} className="mb-4">
-                  {para.split(/\*\*(.*?)\*\*/).map((part, i) =>
-                    i % 2 === 1 ? <strong key={i} className="font-semibold text-gray-900">{part}</strong> : part
+          {topic.introImageUrl && (
+            <div className="flex justify-center">
+              <img src={topic.introImageUrl} alt={topic.title} className="rounded-xl"
+                style={{ maxHeight: '260px', width: '200px', objectFit: 'cover', objectPosition: 'center top' }} />
+            </div>
+          )}
+
+          {/* contentBlocks: ordered sequence of text / image / video */}
+          {topic.contentBlocks ? (
+            <div className="flex flex-col gap-5">
+              {topic.contentBlocks.map((block, bi) => {
+                if (block.type === 'text') return (
+                  <div key={bi} className={`text-lg leading-relaxed ${s.body}`}>
+                    {block.content.split('\n\n').map((para, pi) => (
+                      <p key={pi} className="mb-4">
+                        {para.split(/\*\*(.*?)\*\*/).map((part, i) =>
+                          i % 2 === 1 ? <strong key={i} className="font-semibold text-gray-900">{part}</strong> : part
+                        )}
+                      </p>
+                    ))}
+                  </div>
+                )
+                if (block.type === 'image') return (
+                  <div key={bi} className="flex flex-col gap-2">
+                    <img src={block.url} alt={block.caption || topic.title}
+                      className="w-full rounded-xl" style={{ maxHeight: '400px', objectFit: 'contain' }} />
+                    {block.caption && <p className="text-sm text-gray-500 text-center italic">{block.caption}</p>}
+                  </div>
+                )
+                if (block.type === 'video') return (
+                  <VideoEmbed key={bi} url={block.url} title={block.caption || topic.title} />
+                )
+                return null
+              })}
+            </div>
+          ) : (
+            <>
+              {topic.content && topic.type !== 'quiz' && !topic.imageSide && (
+                <div className={`text-lg leading-relaxed ${s.body}`}>
+                  {topic.content.split('\n\n').map((para, pi) => (
+                    <p key={pi} className="mb-4">
+                      {para.split(/\*\*(.*?)\*\*/).map((part, i) =>
+                        i % 2 === 1 ? <strong key={i} className="font-semibold text-gray-900">{part}</strong> : part
+                      )}
+                    </p>
+                  ))}
+                </div>
+              )}
+              {topic.videoUrl && <VideoEmbed url={topic.videoUrl} title={topic.title} />}
+              {topic.imageUrl && !topic.imageSide && (
+                <div className="flex flex-col gap-4">
+                  <img src={topic.imageUrl} alt={topic.title} className="w-full rounded-xl"
+                    style={topic.imageFullSize
+                      ? { width: '100%', objectFit: 'contain' }
+                      : { maxHeight: '400px', objectFit: 'contain' }} />
+                  {topic.imageUrl2 && (
+                    <img src={topic.imageUrl2} alt={topic.title} className="w-full rounded-xl"
+                      style={{ maxHeight: '400px', objectFit: 'contain' }} />
                   )}
-                </p>
+                  {topic.imageCaption && (
+                    <p className="text-base text-gray-600 leading-relaxed">{parseBold(topic.imageCaption)}</p>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Two-column layout: content left, image right */}
+          {topic.imageSide && topic.imageUrl && (
+            <div className="flex gap-6 items-stretch">
+              <div className="flex-1 min-w-0 flex flex-col">
+                {topic.content && topic.type !== 'quiz' && (
+                  <div className={`text-base leading-relaxed mb-4 ${s.body}`}>
+                    {topic.content.split('\n\n').map((para, pi) => (
+                      <p key={pi} className="mb-3">
+                        {para.split(/\*\*(.*?)\*\*/).map((part, i) =>
+                          i % 2 === 1 ? <strong key={i} className="font-semibold text-gray-900">{part}</strong> : part
+                        )}
+                      </p>
+                    ))}
+                  </div>
+                )}
+                {topic.keyPoints && topic.keyPoints.length > 0 && (
+                  <div className="rounded-xl p-4 flex-1 flex flex-col" style={{ background: '#EEF2FA', border: '1px solid #D0DAF0' }}>
+                    <div className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#596CA6' }}>Key points</div>
+                    <div className="flex flex-col flex-1 justify-between">
+                      {topic.keyPoints.map((pt, i) => (
+                        <div key={i} className="flex items-start gap-3 py-2" style={{ borderBottom: i < topic.keyPoints.length - 1 ? '1px solid #D0DAF0' : 'none' }}>
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-bold"
+                            style={{ background: '#214C91', color: 'white' }}>{i + 1}</div>
+                          <p className="text-sm leading-relaxed text-gray-700"
+                            dangerouslySetInnerHTML={{ __html: pt.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="flex-shrink-0" style={{ width: '48%' }}>
+                <img src={topic.imageUrl} alt={topic.title} className="w-full rounded-xl"
+                  style={{ objectFit: 'contain', display: 'block' }} />
+                {topic.imageCaption && (
+                  <p className="text-sm text-gray-500 text-center italic mt-2">{topic.imageCaption}</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Key points block — only show standalone if NOT in imageSide layout */}
+          {!topic.imageSide && topic.keyPoints && topic.keyPoints.length > 0 && (
+            <div className="rounded-xl p-5" style={{ background: '#EEF2FA', border: '1px solid #D0DAF0' }}>
+              <div className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#596CA6' }}>Key points</div>
+              <div className="flex flex-col gap-2">
+                {topic.keyPoints.map((pt, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-bold"
+                      style={{ background: '#214C91', color: 'white' }}>{i + 1}</div>
+                    <p className="text-base leading-relaxed text-gray-700"
+                      dangerouslySetInnerHTML={{ __html: pt.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Why it matters block */}
+          {topic.whyItMatters && (
+            <div className="rounded-xl p-5" style={{ background: '#F8DCD6', border: '1px solid #F4C7BE' }}>
+              <div className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#C45A44' }}>Why it matters</div>
+              <p className="text-base leading-relaxed" style={{ color: '#7A3328' }}
+                dangerouslySetInnerHTML={{ __html: topic.whyItMatters.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+            </div>
+          )}
+
+          {/* Did you know block */}
+          {topic.didYouKnow && (
+            <div className="rounded-xl p-5 flex gap-4 items-start" style={{ background: '#FAEEDA', border: '1px solid #F4D4A0' }}>
+              <div className="text-2xl flex-shrink-0">💡</div>
+              <div>
+                <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#854F0B' }}>Did you know?</div>
+                <p className="text-base leading-relaxed" style={{ color: '#5C3A0A' }}
+                  dangerouslySetInnerHTML={{ __html: topic.didYouKnow.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+              </div>
+            </div>
+          )}
+
+          {/* Quote block */}
+          {topic.quote && (
+            <div className="rounded-xl p-5 border-l-4" style={{ background: '#F6F5F0', borderLeftColor: '#214C91' }}>
+              <p className="text-lg italic leading-relaxed text-gray-700 mb-2">"{topic.quote.text}"</p>
+              {topic.quote.attribution && (
+                <p className="text-sm font-semibold" style={{ color: '#596CA6' }}>— {topic.quote.attribution}</p>
+              )}
+            </div>
+          )}
+
+          {/* Stats row */}
+          {topic.stats && topic.stats.length > 0 && (
+            <div className={`grid gap-4 ${topic.stats.length === 2 ? 'grid-cols-2' : topic.stats.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+              {topic.stats.map((stat, i) => (
+                <div key={i} className="rounded-xl p-4 text-center" style={{ background: 'white', border: '1px solid #D0DAF0' }}>
+                  <div className="text-3xl font-bold mb-1" style={{ color: '#214C91' }}>{stat.value}</div>
+                  <div className="text-sm text-gray-500 leading-snug">{stat.label}</div>
+                </div>
               ))}
             </div>
           )}
 
-          {topic.videoUrl && <VideoEmbed url={topic.videoUrl} title={topic.title} />}
+          {/* Watch for — pre-video prompt */}
+          {topic.watchFor && (
+            <div className="flex items-start gap-3 rounded-xl px-5 py-4" style={{ background: '#EEF2FA', border: '1px solid #D0DAF0' }}>
+              <div className="text-xl flex-shrink-0">👀</div>
+              <div>
+                <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#596CA6' }}>As you watch, notice...</div>
+                <p className="text-base leading-relaxed" style={{ color: '#1A4D8C' }}>{parseBold(topic.watchFor)}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Pause and think — active engagement prompt */}
+          {topic.pauseAndThink && (
+            <div className="flex items-start gap-3 rounded-xl px-5 py-4" style={{ background: '#F6F5F0', border: '1px solid #D0DAF0' }}>
+              <div className="text-xl flex-shrink-0">🤔</div>
+              <div>
+                <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#596CA6' }}>Pause and think</div>
+                <p className="text-base leading-relaxed text-gray-700">{parseBold(topic.pauseAndThink)}</p>
+              </div>
+            </div>
+          )}
+
           {topic.type === 'quiz' && <QuizBlock topic={topic} isFinalExam={isFinalExam} onPass={() => setShowCertificate(true)} />}
           {topic.type === 'game' && topic.id === 'c9t5' && <Stakeholder userRole={userRole} />}
           {topic.type === 'game' && topic.id !== 'c9t5' && <ReimbursementRoulette userRole={userRole} />}
           {topic.type === 'data' && <DataBlock topic={topic} />}
-
-          {topic.imageUrl && (
-            <div className="flex flex-col gap-4">
-              <img src={topic.imageUrl} alt={topic.title} className="w-full rounded-xl"
-                style={{ maxHeight: '400px', objectFit: 'contain' }} />
-              {topic.imageUrl2 && (
-                <img src={topic.imageUrl2} alt={topic.title} className="w-full rounded-xl"
-                  style={{ maxHeight: '400px', objectFit: 'contain' }} />
-              )}
-              {topic.imageCaption && (
-                <p className="text-base text-gray-600 leading-relaxed">{topic.imageCaption}</p>
-              )}
-            </div>
-          )}
+          {topic.type === 'guess' && <GuessBlock topic={topic} />}
 
           {hasTakeaway && (
             <div className="bg-[#F8DCD6] rounded-xl p-5 border border-[#F4C7BE] mt-auto">
               <div className="text-sm text-[#C45A44] font-semibold uppercase tracking-wide mb-2">Key takeaway</div>
-              <div className="text-base text-[#7A3328] leading-relaxed">{takeaways[topic.id]}</div>
+              <div className="text-base text-[#7A3328] leading-relaxed">{parseBold(takeaways[topic.id])}</div>
             </div>
+          )}
+
+          {/* Deep dive inline toggle — for short optional content */}
+          {topic.deepDive && topic.deepDiveType !== 'drawer' && (
+            <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #D0DAF0' }}>
+              <button
+                onClick={() => setDeepDiveOpen(o => !o)}
+                className="w-full flex items-center justify-between px-5 py-3 transition-all"
+                style={{ background: deepDiveOpen ? '#EEF2FA' : 'white' }}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-base">📖</span>
+                  <span className="text-sm font-semibold" style={{ color: '#596CA6' }}>Go deeper — optional</span>
+                </div>
+                <span className="text-sm" style={{ color: '#596CA6' }}>{deepDiveOpen ? '▲ Hide' : '▼ Show'}</span>
+              </button>
+              {deepDiveOpen && (
+                <div className="px-5 py-4 border-t text-sm leading-relaxed text-gray-600" style={{ borderColor: '#D0DAF0', background: 'white' }}>
+                  {Array.isArray(topic.deepDive) ? (
+                    <div className="flex flex-col gap-3">
+                      {topic.deepDive.map((item, i) => (
+                        <div key={i} className="flex items-start gap-3">
+                          <span className="text-gray-400 mt-0.5 flex-shrink-0">→</span>
+                          <div>
+                            <p className="font-medium text-gray-700 mb-0.5">{item.label}</p>
+                            <a href={item.url} target="_blank" rel="noopener noreferrer"
+                              className="text-sm underline" style={{ color: '#214C91' }}>{item.url}</a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>{topic.deepDive}</p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Deep dive drawer trigger — for long optional content */}
+          {topic.deepDive && topic.deepDiveType === 'drawer' && (
+            <button
+              onClick={() => setDrawerOpen(true)}
+              className="w-full flex items-center justify-between px-5 py-3 rounded-xl transition-all"
+              style={{ background: 'white', border: '1px solid #D0DAF0' }}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-base">📖</span>
+                <span className="text-sm font-semibold" style={{ color: '#596CA6' }}>Go deeper — optional</span>
+              </div>
+              <span className="text-sm" style={{ color: '#596CA6' }}>Open →</span>
+            </button>
           )}
         </div>
 
@@ -697,6 +1042,51 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
           )}
         </div>
       </div>
+
+      {/* Drawer overlay — for long optional content */}
+      {drawerOpen && topic.deepDive && (
+        <>
+          <div className="fixed inset-0 z-40" style={{ background: 'rgba(0,0,0,0.3)' }} onClick={() => setDrawerOpen(false)} />
+          <div className="fixed top-0 right-0 h-full z-50 flex flex-col shadow-2xl"
+            style={{ width: '480px', background: 'white', maxWidth: '90vw' }}>
+            <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: '#D0DAF0' }}>
+              <div className="flex items-center gap-2">
+                <span>📖</span>
+                <span className="text-sm font-bold uppercase tracking-widest" style={{ color: '#596CA6' }}>Optional — go deeper</span>
+              </div>
+              <button onClick={() => setDrawerOpen(false)}
+                className="text-gray-400 hover:text-gray-600 text-xl font-light">✕</button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-5">
+              {Array.isArray(topic.deepDive) ? (
+                <div className="flex flex-col gap-5">
+                  {topic.deepDive.map((item, i) => (
+                    <div key={i} className="rounded-xl p-4" style={{ background: '#F6F5F0', border: '1px solid #D0DAF0' }}>
+                      {item.label && <p className="text-sm font-semibold text-gray-800 mb-1">{item.label}</p>}
+                      {item.description && <p className="text-sm text-gray-600 mb-2">{item.description}</p>}
+                      {item.url && (
+                        <a href={item.url} target="_blank" rel="noopener noreferrer"
+                          className="text-sm font-medium underline" style={{ color: '#214C91' }}>
+                          {item.urlLabel || 'Read more →'}
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm leading-relaxed text-gray-600">{topic.deepDive}</p>
+              )}
+            </div>
+            <div className="px-6 py-4 border-t" style={{ borderColor: '#D0DAF0' }}>
+              <button onClick={() => setDrawerOpen(false)}
+                className="w-full py-3 rounded-xl text-sm font-semibold text-white"
+                style={{ background: '#214C91' }}>
+                Back to lesson
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       <AiTutor topicTitle={topic.title} topicContent={topic.content} />
     </div>

@@ -9,7 +9,6 @@ const roles = [
     dot: '#214C91',
     bg: '#EEEDFE',
     image: '/Investor.png',
-    stat: '$2.87B average drug cost',
   },
   {
     id: 'scientist',
@@ -18,7 +17,6 @@ const roles = [
     dot: '#214C91',
     bg: '#EEF2FA',
     image: '/Scientist.png',
-    stat: '10-15 years from lab to shelf',
   },
   {
     id: 'clinician',
@@ -27,7 +25,6 @@ const roles = [
     dot: '#C45A44',
     bg: '#F8DCD6',
     image: '/Clinician.png',
-    stat: '1 in 10 drugs reaches patients',
   },
   {
     id: 'policy',
@@ -36,7 +33,6 @@ const roles = [
     dot: '#854F0B',
     bg: '#FAEEDA',
     image: '/policymaker.webp',
-    stat: 'Policy shapes patient access',
   },
 ]
 
@@ -215,8 +211,8 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
           </div>
         </div>
 
-        {/* 5. Who this is for — light peach bg */}
-        <div style={{ background: '#FFF5F3' }} className="px-10 py-12">
+        {/* 5. Who this is for — white bg, navy borders */}
+        <div style={{ background: '#F6F5F0' }} className="px-10 py-12">
           <div className="max-w-4xl mx-auto">
             <div className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#596CA6' }}>Who this is for</div>
             <h2 className="text-3xl font-semibold mb-2" style={{ color: '#214C91' }}>Built for biotech professionals at every stage</h2>
@@ -224,14 +220,16 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
             <p className="text-base text-gray-500 mb-8">Everyone takes the same course. But your role shapes how you see every decision.</p>
             <div className="grid grid-cols-4 gap-4">
               {roles.map(r => (
-                <div key={r.id} className="rounded-2xl overflow-hidden" style={{ border: '0.5px solid #D0DAF0' }}>
-                  <div className="h-32 overflow-hidden">
+                <div key={r.id} className="rounded-2xl overflow-hidden"
+                  style={{ border: '1.5px solid #214C91', background: 'white' }}>
+                  {/* Image — no text overlay */}
+                  <div className="h-32 overflow-hidden flex-shrink-0">
                     <img src={r.image} alt={r.label} className="w-full h-full object-cover" />
                   </div>
+                  {/* Text body — flex column so stat pill always sits at bottom */}
                   <div className="p-5">
                     <div className="text-base font-semibold mb-2" style={{ color: r.dot }}>{r.label}</div>
-                    <div className="text-sm text-gray-500 leading-relaxed mb-3">{r.desc}</div>
-                    <div className="text-xs font-medium px-2 py-1 rounded-full inline-block" style={{ background: r.bg, color: r.dot }}>{r.stat}</div>
+                    <div className="text-sm text-gray-500 leading-relaxed">{r.desc}</div>
                   </div>
                 </div>
               ))}
@@ -291,8 +289,8 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
           </div>
         </div>
 
-        {/* 8. CTA — role selection — light peach */}
-        <div id="role-section" style={{ background: '#FFF5F3' }} className="px-10 py-14">
+        {/* 8. CTA — role selection */}
+        <div id="role-section" style={{ background: '#F6F5F0' }} className="px-10 py-14">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10">
               <h2 className="text-3xl font-semibold mb-3" style={{ color: '#214C91' }}>Ready to begin?</h2>
@@ -310,14 +308,18 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
             <div className="grid grid-cols-2 gap-6 mb-8">
               {roles.map(r => (
                 <div key={r.id} onClick={() => setSelectedRole(r.id)}
-                  className={`rounded-2xl overflow-hidden cursor-pointer transition-all ${userRole === r.id ? 'scale-[1.02]' : ''}`}
-                  style={{ border: selectedRole === r.id ? '2px solid #214C91' : '2px solid #D0DAF0' }}>
-                  <div className="h-40 overflow-hidden relative">
+                  className={`rounded-2xl overflow-hidden cursor-pointer transition-all ${selectedRole === r.id ? 'scale-[1.02]' : ''}`}
+                  style={{
+                    border: selectedRole === r.id ? '2.5px solid #214C91' : '1.5px solid #214C91',
+                    background: 'white',
+                    boxShadow: selectedRole === r.id ? '0 0 0 3px rgba(33,76,145,0.15)' : 'none',
+                  }}>
+                  {/* Image only — no text overlay */}
+                  <div className="h-40 overflow-hidden flex-shrink-0">
                     <img src={r.image} alt={r.label} className="w-full h-full object-cover" />
-                    <div className="absolute bottom-3 right-3 left-3 text-center text-sm font-medium px-3 py-1.5 rounded-full"
-                      style={{ background: 'rgba(255,255,255,0.92)', color: r.dot }}>{r.stat}</div>
                   </div>
-                  <div className="p-5" style={{ background: '#F8DCD6' }}>
+                  {/* Text body — stat pill always at bottom */}
+                  <div className="p-5">
                     <div className="text-lg font-semibold mb-2" style={{ color: '#214C91' }}>{r.label}</div>
                     <div className="text-sm leading-relaxed" style={{ color: '#596CA6' }}>{r.desc}</div>
                   </div>

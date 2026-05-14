@@ -29,7 +29,7 @@ const roles = [
   {
     id: 'policy',
     label: 'The Policy Maker',
-    desc: "You set the rules. Every decision affects millions. One decision can determine who gets access — and who doesn't.",
+    desc: "You set the rules. Every decision affects millions — and who gets access.",
     dot: '#854F0B',
     bg: '#FAEEDA',
     image: '/policymaker.webp',
@@ -315,13 +315,12 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
                     boxShadow: selectedRole === r.id ? '0 0 0 3px rgba(33,76,145,0.15)' : 'none',
                   }}>
                   {/* Image only — no text overlay */}
-                  <div className="h-40 overflow-hidden flex-shrink-0">
+                  <div className="h-36 overflow-hidden flex-shrink-0">
                     <img src={r.image} alt={r.label} className="w-full h-full object-cover" />
                   </div>
-                  {/* Text body — stat pill always at bottom */}
-                  <div className="p-5">
-                    <div className="text-lg font-semibold mb-2" style={{ color: '#214C91' }}>{r.label}</div>
-                    <div className="text-sm leading-relaxed" style={{ color: '#596CA6' }}>{r.desc}</div>
+                  {/* Label only — no description */}
+                  <div className="px-4 py-3">
+                    <div className="text-base font-semibold" style={{ color: '#214C91' }}>{r.label}</div>
                   </div>
                 </div>
               ))}

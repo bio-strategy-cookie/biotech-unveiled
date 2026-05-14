@@ -182,6 +182,13 @@ function NPLBChat() {
   )
 }
 
+function parseBold(text) {
+  if (!text) return null
+  return text.split(/\*\*(.*?)\*\*/).map((part, i) =>
+    i % 2 === 1 ? <strong key={i} className="font-semibold text-gray-900">{part}</strong> : part
+  )
+}
+
 function VideoEmbed({ url, title }) {
   if (!url) return null
   return (
@@ -781,7 +788,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
               <div className="text-white text-xl flex-shrink-0 mt-0.5">🎯</div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.6)' }}>The core idea</div>
-                <p className="text-base font-medium leading-relaxed text-white">{topic.coreConcept}</p>
+                <p className="text-base font-medium leading-relaxed text-white">{parseBold(topic.coreConcept)}</p>
               </div>
             </div>
           )}
@@ -844,7 +851,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
                       style={{ maxHeight: '400px', objectFit: 'contain' }} />
                   )}
                   {topic.imageCaption && (
-                    <p className="text-base text-gray-600 leading-relaxed">{topic.imageCaption}</p>
+                    <p className="text-base text-gray-600 leading-relaxed">{parseBold(topic.imageCaption)}</p>
                   )}
                 </div>
               )}
@@ -886,7 +893,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
                 <img src={topic.imageUrl} alt={topic.title} className="w-full rounded-xl"
                   style={{ objectFit: 'contain', display: 'block' }} />
                 {topic.imageCaption && (
-                  <p className="text-sm text-gray-500 text-center italic mt-2">{topic.imageCaption}</p>
+                  <p className="text-sm text-gray-500 text-center italic mt-2">{parseBold(topic.imageCaption)}</p>
                 )}
               </div>
             </div>
@@ -958,7 +965,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
               <div className="text-xl flex-shrink-0">👀</div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#596CA6' }}>As you watch, notice...</div>
-                <p className="text-base leading-relaxed" style={{ color: '#1A4D8C' }}>{topic.watchFor}</p>
+                <p className="text-base leading-relaxed" style={{ color: '#1A4D8C' }}>{parseBold(topic.watchFor)}</p>
               </div>
             </div>
           )}
@@ -969,7 +976,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
               <div className="text-xl flex-shrink-0">🤔</div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#596CA6' }}>Pause and think</div>
-                <p className="text-base leading-relaxed text-gray-700">{topic.pauseAndThink}</p>
+                <p className="text-base leading-relaxed text-gray-700">{parseBold(topic.pauseAndThink)}</p>
               </div>
             </div>
           )}
@@ -983,7 +990,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
           {hasTakeaway && (
             <div className="bg-[#F8DCD6] rounded-xl p-5 border border-[#F4C7BE] mt-auto">
               <div className="text-sm text-[#C45A44] font-semibold uppercase tracking-wide mb-2">Key takeaway</div>
-              <div className="text-base text-[#7A3328] leading-relaxed">{takeaways[topic.id]}</div>
+              <div className="text-base text-[#7A3328] leading-relaxed">{parseBold(takeaways[topic.id])}</div>
             </div>
           )}
 

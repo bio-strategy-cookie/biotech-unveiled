@@ -193,6 +193,7 @@ export default function ReimbursementRoulette({ userRole }) {
   const [spinning, setSpinning] = useState(false)
   const [showObstacle, setShowObstacle] = useState(false)
   const [landedOn, setLandedOn] = useState(null)
+  const [showContinue, setShowContinue] = useState(false)
   const rotRef = useRef(0)
   const animRef = useRef(null)
 
@@ -221,8 +222,10 @@ export default function ReimbursementRoulette({ userRole }) {
         rotRef.current = endRot % 360
         setSpinning(false)
         const roundIdToLabel = { formulary: 'Formulary', priorauth: 'Prior authorization', steptherapy: 'Step therapy', pbm: 'Accumulator', oop: 'Pharmacy counter' }
-        setLandedOn(roundIdToLabel[rounds[currentRound].id] || rounds[currentRound].label.split(' — ')[1])
-        setTimeout(() => { setLandedOn(null); setShowObstacle(true) }, 6000)
+        const label = roundIdToLabel[rounds[currentRound].id] || rounds[currentRound].label.split(' — ')[1]
+        setLandedOn(label)
+        setShowObstacle(false)
+        setShowContinue(true)
       }
     }
     animRef.current = requestAnimationFrame(animate)
@@ -250,6 +253,9 @@ export default function ReimbursementRoulette({ userRole }) {
       setChoiceMade(null)
       setShowObstacle(false)
       setLandedOn(null)
+      setShowContinue(false)
+      setRotation(0)
+      rotRef.current = 0
     }
   }
 
@@ -263,6 +269,7 @@ export default function ReimbursementRoulette({ userRole }) {
     rotRef.current = 0
     setShowObstacle(false)
     setLandedOn(null)
+    setShowContinue(false)
     if (userRole) setRole(userRole)
     else setRole(null)
   }
@@ -350,9 +357,17 @@ export default function ReimbursementRoulette({ userRole }) {
                 {spinning ? 'Spinning...' : 'Spin the wheel'}
               </button>
               {landedOn && (
-                <div className="text-center animate-pulse">
+                <div className="text-center">
                   <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#596CA6' }}>Landed on</p>
-                  <p className="text-base font-semibold" style={{ color: '#214C91' }}>{(landedOn || '').replace('\n', ' ')}</p>
+                  <p className="text-base font-semibold mb-3" style={{ color: '#214C91' }}>{(landedOn || '').replace('\n', ' ')}</p>
+                  {showContinue && (
+                    <button
+                      onClick={() => { setLandedOn(null); setShowObstacle(true); setShowContinue(false) }}
+                      className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+                      style={{ background: '#214C91' }}>
+                      See the obstacle →
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -483,26 +498,38 @@ export default function ReimbursementRoulette({ userRole }) {
                 {round.choices.map((c, ci) => {
                   const isChosen = ci === r.choiceIndex
                   const isBest = ci === bestChoice
+                  const isChosenAndBest = isChosen && isBest
+                  const isChosenWrong = isChosen && !isBest
                   const roleOut = getRoleOutcome(round.id, ci)
+                  if (!isChosen && !isBest) return null
                   return (
-                    <div key={ci} className="rounded-xl px-4 py-3 text-base"
+                    <div key={ci} className="rounded-xl px-4 py-3"
                       style={
-                        isChosen && isBest ? { border: '1px solid #214C91', background: '#EEF2FA' }
-                        : isChosen ? { border: '1px solid #E24B4A', background: '#FEF2F2' }
-                        : isBest ? { border: '1px solid #D0DAF0', background: '#F6F5F0' }
-                        : { border: '1px solid #F3F4F6', background: 'white', opacity: 0.5 }
+                        isChosenAndBest
+                          ? { border: '2px solid #214C91', background: '#EEF2FA' }
+                          : isChosenWrong
+                          ? { border: '2px solid #E24B4A', background: '#FEF2F2' }
+                          : { border: '2px solid #214C91', background: '#EEF2FA' }
                       }>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm font-bold" style={{ color: '#214C91' }}>
-                          {isChosen ? '👆 Your choice' : isBest ? '✅ Best outcome' : ''}
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-sm font-bold px-2 py-0.5 rounded-full"
+                          style={
+                            isChosenAndBest
+                              ? { background: '#214C91', color: 'white' }
+                              : isChosenWrong
+                              ? { background: '#E24B4A', color: 'white' }
+                              : { background: '#214C91', color: 'white' }
+                          }>
+                          {isChosenAndBest ? '👆 Your choice — Best outcome ✅' : isChosenWrong ? '👆 Your choice' : '✅ Best outcome'}
                         </span>
                         <span className="text-sm font-semibold ml-auto"
                           style={{ color: c.impact === 0 ? '#214C91' : c.impact > -15 ? '#C45A44' : '#991B1B' }}>
                           {c.impact === 0 ? 'No loss' : `${c.impact}% access`}
                         </span>
                       </div>
-                      <p className="text-base font-medium mb-1" style={{ color: isChosen || isBest ? '#214C91' : '#6B7280' }}>{c.text}</p>
-                      {(isChosen || isBest) && roleOut && (
+                      <p className="text-base font-semibold mb-1"
+                        style={{ color: isChosenWrong ? '#991B1B' : '#214C91' }}>{c.text}</p>
+                      {roleOut && (
                         <p className="text-sm leading-relaxed mt-1" style={{ color: '#596CA6' }}>{roleOut.text}</p>
                       )}
                     </div>

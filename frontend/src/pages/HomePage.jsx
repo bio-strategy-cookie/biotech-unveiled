@@ -7,7 +7,7 @@ const roles = [
     label: 'The Investor',
     desc: 'You deploy capital. Every decision is about risk vs return.',
     dot: '#214C91',
-    bg: '#EEEDFE',
+    bg: '#EEF2FA',
     image: '/Investor.png',
   },
   {
@@ -72,11 +72,11 @@ const stages = [
     chapterIds: [3, 4, 5],
     icon: '💰',
     headerBg: '#D0DAF0',
-    headerBorder: '#B0C0E8',
-    iconBg: '#B0C0E8',
+    headerBorder: '#D0DAF0',
+    iconBg: '#D0DAF0',
     nameColor: '#1A4D8C',
-    pillBg: '#B0C0E8',
-    pillColor: '#0F2D5A',
+    pillBg: '#D0DAF0',
+    pillColor: '#214C91',
   },
   {
     num: 3,
@@ -87,8 +87,8 @@ const stages = [
     chapters: ['Ch 6: Why insurance matters', 'Ch 7: Problems with insurance', 'Ch 8–9: Policy & wrap-up'],
     chapterIds: [6, 7, 8],
     icon: '⚖️',
-    headerBg: '#B0C0E8',
-    headerBorder: '#8099D4',
+    headerBg: '#B8C8E8',
+    headerBorder: '#A0B4D8',
     iconBg: '#596CA6',
     nameColor: '#0F2D5A',
     pillBg: '#596CA6',
@@ -145,17 +145,17 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
         </div>
 
         {/* Features strip */}
-        <div className="grid grid-cols-3 bg-white border-b border-gray-200">
+        <div className="grid grid-cols-3 border-b" style={{ background: "#F6F5F0", borderColor: "#D0DAF0" }}>
           {[
             { bg: '#EEF2FA', color: '#214C91', label: 'NPLB Chatbot', sub: 'Ask questions on every topic',  icon: '🤖' },
             { bg: '#F8DCD6', color: '#C45A44', label: 'XP + streaks', sub: 'Earn points as you progress',   icon: '⚡' },
             { bg: '#EEF2FA', color: '#214C91', label: 'Certificate',  sub: 'Pass the exam to earn yours',   icon: '🏆' },
           ].map((item, i) => (
-            <div key={i} className={`flex items-center gap-3 px-5 py-5 ${i < 2 ? 'border-r border-gray-200' : ''}`}>
+            <div key={i} className={`flex items-center gap-3 px-5 py-5 ${i < 2 ? 'border-r' : ''}`} style={{ borderColor: '#D0DAF0' }}>
               <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-xl" style={{ background: item.bg }}>{item.icon}</div>
               <div>
                 <div className="text-base font-semibold" style={{ color: item.color }}>{item.label}</div>
-                <div className="text-sm text-gray-500 mt-0.5">{item.sub}</div>
+                <div className="text-sm mt-0.5" style={{ color: "#596CA6" }}>{item.sub}</div>
               </div>
             </div>
           ))}
@@ -166,7 +166,7 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
           <div className="max-w-3xl mx-auto">
             <div className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#596CA6' }}>What this course gives you</div>
             <h2 className="text-3xl font-semibold mb-4 leading-tight" style={{ color: '#214C91' }}>A systems-level understanding of biotech</h2>
-            <p className="text-lg text-gray-600 leading-relaxed mb-8">
+            <p className="text-lg leading-relaxed mb-8" style={{ color: "#596CA6" }}>
               This course equips you with a systems-level understanding of biotech — connecting science, regulation, pricing, and policy into one coherent picture.
             </p>
             <div className="bg-white rounded-r-2xl px-7 py-6" style={{ borderLeft: '4px solid #214C91' }}>
@@ -181,9 +181,9 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: '#F8DCD6' }}>
-                      <div className="w-2 h-2 rounded-full" style={{ background: '#E4745E' }}></div>
+                      <div className="w-2 h-2 rounded-full" style={{ background: '#C45A44' }}></div>
                     </div>
-                    <span className="text-base text-gray-700 leading-relaxed">{item}</span>
+                    <span className="text-base leading-relaxed" style={{ color: "#374151" }}>{item}</span>
                   </div>
                 ))}
               </div>
@@ -217,7 +217,7 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
             <div className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#596CA6' }}>Who this is for</div>
             <h2 className="text-3xl font-semibold mb-2" style={{ color: '#214C91' }}>Built for biotech professionals at every stage</h2>
             <p className="text-base font-semibold mb-2" style={{ color: '#1A4D8C' }}>Pick your role — same system, different perspective.</p>
-            <p className="text-base text-gray-500 mb-8">Everyone takes the same course. But your role shapes how you see every decision.</p>
+            <p className="text-base mb-8" style={{ color: "#596CA6" }}>Everyone takes the same course. But your role shapes how you see every decision.</p>
             <div className="grid grid-cols-4 gap-4">
               {roles.map(r => (
                 <div key={r.id} className="rounded-2xl overflow-hidden"
@@ -229,7 +229,7 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
                   {/* Text body — flex column so stat pill always sits at bottom */}
                   <div className="p-5">
                     <div className="text-base font-semibold mb-2" style={{ color: r.dot }}>{r.label}</div>
-                    <div className="text-sm text-gray-500 leading-relaxed">{r.desc}</div>
+                    <div className="text-sm leading-relaxed" style={{ color: "#596CA6" }}>{r.desc}</div>
                   </div>
                 </div>
               ))}
@@ -237,12 +237,12 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
           </div>
         </div>
 
-        {/* 6. How the course works — cream bg */}
-        <div style={{ background: '#F6F5F0' }} className="px-10 py-12 border-t border-gray-100">
+        {/* 6. How the course works — light peach bg */}
+        <div className="px-10 py-12" style={{ background: '#FFF5F3', borderTop: '1px solid #F4C7BE' }}>
           <div className="max-w-3xl mx-auto">
             <div className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#596CA6' }}>How the course works</div>
             <h2 className="text-3xl font-semibold mb-2" style={{ color: '#1A4D8C' }}>A decision-driven journey through 3 stages</h2>
-            <p className="text-base text-gray-500 mb-8">Every stage puts you in the middle of a real decision. Every choice has consequences.</p>
+            <p className="text-base mb-8" style={{ color: "#596CA6" }}>Every stage puts you in the middle of a real decision. Every choice has consequences.</p>
             <div className="flex flex-col gap-5">
               {stages.map((stage, i) => {
                 return (
@@ -253,11 +253,11 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
                         style={{ background: stage.iconBg }}>{stage.icon}</div>
                       <div>
                         <div className="text-base font-semibold" style={{ color: stage.nameColor }}>{stage.name}</div>
-                        <div className="text-sm text-gray-500">{stage.tagline}</div>
+                        <div className="text-sm" style={{ color: "#596CA6" }}>{stage.tagline}</div>
                       </div>
                     </div>
                     <div className="px-6 py-5">
-                      <p className="text-base text-gray-700 leading-relaxed mb-4">{stage.desc}</p>
+                      <p className="text-base leading-relaxed mb-4" style={{ color: "#596CA6" }}>{stage.desc}</p>
                       <div className="flex gap-2 flex-wrap">
                         {stage.chapters.map(ch => (
                           <span key={ch} className="text-xs px-3 py-1 rounded-full font-medium"
@@ -273,7 +273,7 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
         </div>
 
         {/* 7. Peter */}
-        <div className="bg-white px-10 py-10 border-t border-gray-100">
+        <div className="px-10 py-10 border-t" style={{ background: "white", borderColor: "#D0DAF0" }}>
           <div className="max-w-3xl mx-auto">
             <div className="text-xs font-bold uppercase tracking-widest mb-6" style={{ color: '#596CA6' }}>Your instructor</div>
             <div className="flex gap-6 items-start">
@@ -282,15 +282,15 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
               </div>
               <div>
                 <div className="text-xl font-semibold mb-1" style={{ color: '#214C91' }}>Peter Kolchinsky, PhD</div>
-                <div className="text-base text-gray-500 mb-3">Founder & Managing Partner, RA Capital Management</div>
-                <div className="text-base text-gray-600 italic leading-relaxed">"Biotech deals aren't just about science — they're about navigating a socio-economic contract. This course will give you the context you need to thrive in this industry and advocate for policies that actually work."</div>
+                <div className="text-base mb-3" style={{ color: "#596CA6" }}>Founder & Managing Partner, RA Capital Management</div>
+                <div className="text-base italic leading-relaxed" style={{ color: "#596CA6" }}>"Biotech deals aren't just about science — they're about navigating a socio-economic contract. This course will give you the context you need to thrive in this industry and advocate for policies that actually work."</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* 8. CTA — role selection */}
-        <div id="role-section" style={{ background: '#F6F5F0' }} className="px-10 py-14">
+        <div id="role-section" className="px-10 py-14" style={{ background: '#FFF5F3', borderTop: '1px solid #F4C7BE' }}>
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10">
               <h2 className="text-3xl font-semibold mb-3" style={{ color: '#214C91' }}>Ready to begin?</h2>
@@ -343,7 +343,7 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
             </div>
             <span className="text-sm font-medium text-white">RA Capital Management</span>
           </div>
-          <span className="text-xs text-gray-400">© 2026 RA Capital. All rights reserved.</span>
+          <span className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>© 2026 RA Capital. All rights reserved.</span>
         </div>
 
       </div>
@@ -354,7 +354,7 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
 
   return (
     <div className="min-h-screen" style={{ background: '#F6F5F0' }}>
-      <div className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between">
+      <div className="border-b px-8 py-4 flex items-center justify-between" style={{ background: "#F6F5F0", borderColor: "#D0DAF0" }}>
         <div className="flex items-center gap-3">
           <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: '#1A4D8C' }}>
             <div className="w-2.5 h-2.5 rounded-full" style={{ background: '#F0B2A6' }}></div>
@@ -364,13 +364,13 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
         <div className="flex items-center gap-3">
           <span className="text-xs px-3 py-1 rounded-full font-medium" style={{ background: '#EEF2FA', color: '#214C91' }}>{roleLabel}</span>
           <span className="text-xs px-3 py-1 rounded-full font-medium" style={{ background: '#F8DCD6', color: '#C45A44' }}>{xp} XP</span>
-          <button onClick={() => setUserRole(null)} className="text-xs text-gray-400 hover:text-gray-600">← Change</button>
+          <button onClick={() => setUserRole(null)} className="text-xs" style={{ color: "#596CA6" }}>← Change</button>
         </div>
       </div>
 
       <div className="max-w-3xl mx-auto px-8 py-10">
         <h1 className="text-3xl font-semibold mb-2" style={{ color: '#214C91' }}>Your biotech journey</h1>
-        <p className="text-base text-gray-500 mb-8">Three stages. Every decision has consequences.</p>
+        <p className="text-base mb-8" style={{ color: "#596CA6" }}>Three stages. Every decision has consequences.</p>
 
         <div className="flex flex-col gap-0">
           {stages.map((stage, i) => {
@@ -378,20 +378,20 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
             const isLocked = i > 0
             return (
               <div key={stage.num}>
-                <div className={`bg-white border rounded-2xl overflow-hidden transition-all ${isLocked ? 'opacity-50' : 'hover:shadow-sm'}`}
-                  style={{ borderColor: '#D0DAF0' }}>
+                <div className={`rounded-2xl overflow-hidden transition-all ${isLocked ? 'opacity-50' : 'hover:shadow-sm'}`}
+                  style={{ borderColor: '#D0DAF0', border: '1px solid #D0DAF0', background: 'white' }}>
                   <div className="px-6 py-4 flex items-center gap-4 border-b"
                     style={{ background: stage.headerBg, borderColor: stage.headerBorder }}>
                     <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl flex-shrink-0"
                       style={{ background: stage.iconBg }}>{stage.icon}</div>
                     <div className="flex-1">
                       <div className="text-base font-semibold" style={{ color: stage.nameColor }}>{stage.name}</div>
-                      <div className="text-sm text-gray-500">{stage.tagline}</div>
+                      <div className="text-sm" style={{ color: "#596CA6" }}>{stage.tagline}</div>
                     </div>
-                    {isLocked && <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full font-medium">Locked</span>}
+                    {isLocked && <span className="text-xs px-3 py-1 rounded-full font-medium" style={{ background: "#F8DCD6", color: "#C45A44" }}>Locked</span>}
                   </div>
                   <div className="px-6 py-5">
-                    <p className="text-sm text-gray-600 leading-relaxed mb-4">{stage.desc}</p>
+                    <p className="text-sm leading-relaxed mb-4" style={{ color: "#596CA6" }}>{stage.desc}</p>
                     <div className="flex gap-2 flex-wrap mb-4">
                       {stage.chapters.map(ch => (
                         <span key={ch} className="text-xs px-3 py-1 rounded-full font-medium"
@@ -411,7 +411,7 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
                 </div>
                 {i < stages.length - 1 && (
                   <div className="flex justify-center py-2">
-                    <div className="w-px h-6 bg-gray-200"></div>
+                    <div className="w-px h-6" style={{ background: "#D0DAF0" }}></div>
                   </div>
                 )}
               </div>
@@ -434,7 +434,7 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
             </div>
             <span className="text-sm font-medium text-white">RA Capital Management</span>
           </div>
-          <span className="text-xs text-gray-400">© 2026 RA Capital. All rights reserved.</span>
+          <span className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>© 2026 RA Capital. All rights reserved.</span>
         </div>
       </div>
     </div>

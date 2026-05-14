@@ -7,10 +7,10 @@ import { useState, useEffect, useRef } from 'react'
 
 const segments = [
   { label: 'Formulary',        color: '#214C91' },
-  { label: 'Prior auth',       color: '#C45A44' },
+  { label: 'Prior authorization', color: '#C45A44' },
   { label: 'Step therapy',     color: '#1A4D8C' },
   { label: 'Accumulator',      color: '#E4745E' },
-  { label: 'Pharmacy\ncounter', color: '#596CA6' },
+  { label: 'Pharmacy counter', color: '#596CA6' },
 ]
 
 const roleOutcomes = {
@@ -220,7 +220,8 @@ export default function ReimbursementRoulette({ userRole }) {
       } else {
         rotRef.current = endRot % 360
         setSpinning(false)
-        setLandedOn(rounds[currentRound].label.split(' — ')[1])
+        const roundIdToLabel = { formulary: 'Formulary', priorauth: 'Prior authorization', steptherapy: 'Step therapy', pbm: 'Accumulator', oop: 'Pharmacy counter' }
+        setLandedOn(roundIdToLabel[rounds[currentRound].id] || rounds[currentRound].label.split(' — ')[1])
         setTimeout(() => { setLandedOn(null); setShowObstacle(true) }, 6000)
       }
     }
@@ -351,7 +352,7 @@ export default function ReimbursementRoulette({ userRole }) {
               {landedOn && (
                 <div className="text-center animate-pulse">
                   <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#596CA6' }}>Landed on</p>
-                  <p className="text-base font-semibold" style={{ color: '#214C91' }}>{landedOn}</p>
+                  <p className="text-base font-semibold" style={{ color: '#214C91' }}>{(landedOn || '').replace('\n', ' ')}</p>
                 </div>
               )}
             </div>
@@ -359,10 +360,10 @@ export default function ReimbursementRoulette({ userRole }) {
             <div className="flex flex-col gap-3 flex-1">
               <p className="text-sm font-bold uppercase tracking-widest mb-1" style={{ color: '#596CA6' }}>The 5 obstacles</p>
               {[
-                { color: '#214C91', label: 'Formulary placement', desc: 'Will the PBM put your drug on the preferred list — and at what cost to your margins?' },
+                { color: '#214C91', label: 'Formulary', desc: 'Will the PBM put your drug on the preferred list — and at what cost to your margins?' },
                 { color: '#C45A44', label: 'Prior authorization', desc: 'Insurers require doctors to get approval before prescribing. How burdensome is the process?' },
                 { color: '#1A4D8C', label: 'Step therapy', desc: 'Patients must fail on cheaper drugs first before they can access yours.' },
-                { color: '#E4745E', label: 'Accumulator programs', desc: 'PBMs pocket your copay assistance instead of passing savings to patients.' },
+                { color: '#E4745E', label: 'Accumulator', desc: 'PBMs pocket your copay assistance instead of passing savings to patients.' },
                 { color: '#596CA6', label: 'Pharmacy counter', desc: 'After all that — can the patient actually afford their out-of-pocket cost?' },
               ].map((item, i) => {
                 const isActive = landedOn === item.label
@@ -394,13 +395,13 @@ export default function ReimbursementRoulette({ userRole }) {
         <div className="flex flex-col gap-3">
           {/* Question card */}
           <div className="rounded-2xl p-6" style={{ background: 'white', border: '1px solid #D0DAF0' }}>
-            <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#596CA6' }}>{round.label}</p>
-            <h3 className="text-base font-semibold mb-3" style={{ color: '#214C91' }}>{round.title}</h3>
-            <p className="text-sm leading-relaxed mb-5" style={{ color: '#4B5563' }}>{round.desc}</p>
+            <p className="text-sm font-bold uppercase tracking-widest mb-2" style={{ color: '#596CA6' }}>{round.label}</p>
+            <h3 className="text-lg font-semibold mb-3" style={{ color: '#214C91' }}>{round.title}</h3>
+            <p className="text-base leading-relaxed mb-5" style={{ color: '#4B5563' }}>{round.desc}</p>
             <div className="flex flex-col gap-2">
               {round.choices.map((c, i) => (
                 <button key={i} onClick={() => makeChoice(i)} disabled={choiceMade !== null}
-                  className="text-left px-4 py-3 rounded-xl text-sm font-medium transition-all"
+                  className="text-left px-4 py-3 rounded-xl text-base font-medium transition-all"
                   style={
                     choiceMade === null
                       ? { border: '1px solid #D0DAF0', color: '#214C91', background: 'white', cursor: 'pointer' }
@@ -426,19 +427,19 @@ export default function ReimbursementRoulette({ userRole }) {
                 {roleOut ? (
                   <>
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs font-bold uppercase tracking-widest px-2 py-1 rounded-full"
+                      <span className="text-sm font-bold uppercase tracking-widest px-2 py-1 rounded-full"
                         style={{ background: rc?.bg, color: rc?.text, border: `1px solid ${rc?.border}` }}>
                         {roleLabels[role]}
                       </span>
                     </div>
                     <p className="text-base font-semibold mb-2" style={{ color: '#214C91' }}>{roleOut.title}</p>
-                    <p className="text-sm leading-relaxed mb-4" style={{ color: '#374151' }}>{roleOut.text}</p>
+                    <p className="text-base leading-relaxed mb-4" style={{ color: '#374151' }}>{roleOut.text}</p>
                   </>
                 ) : (
-                  <p className="text-sm leading-relaxed mb-4" style={{ color: '#374151' }}>{round.choices[choiceMade].text}</p>
+                  <p className="text-base leading-relaxed mb-4" style={{ color: '#374151' }}>{round.choices[choiceMade].text}</p>
                 )}
                 <button onClick={nextRound}
-                  className="px-5 py-2.5 text-sm font-semibold rounded-xl text-white transition-all"
+                  className="px-5 py-2.5 text-base font-semibold rounded-xl text-white transition-all"
                   style={{ background: '#214C91' }}
                   onMouseEnter={e => e.currentTarget.style.background = '#1A4D8C'}
                   onMouseLeave={e => e.currentTarget.style.background = '#214C91'}>
@@ -457,8 +458,8 @@ export default function ReimbursementRoulette({ userRole }) {
     <div className="rounded-2xl p-8" style={{ background: 'white', border: '1px solid #D0DAF0' }}>
       <div className="text-center mb-6">
         <div className="text-4xl mb-3">{access > 70 ? '✅' : access > 40 ? '⚠️' : '❌'}</div>
-        <h2 className="text-xl font-semibold mb-2" style={{ color: '#214C91' }}>Game over</h2>
-        <p className="text-sm" style={{ color: '#596CA6' }}>Your drug reached <strong style={{ color: '#214C91' }}>{access}%</strong> of eligible patients.</p>
+        <h2 className="text-2xl font-semibold mb-2" style={{ color: '#214C91' }}>Game over</h2>
+        <p className="text-base" style={{ color: '#596CA6' }}>Your drug reached <strong style={{ color: '#214C91' }}>{access}%</strong> of eligible patients.</p>
       </div>
 
       <div className="flex flex-col gap-4 mb-6">
@@ -468,8 +469,8 @@ export default function ReimbursementRoulette({ userRole }) {
           return (
             <div key={i} className="rounded-xl p-4" style={{ background: '#F6F5F0', border: '1px solid #D0DAF0' }}>
               <div className="flex justify-between items-start mb-3">
-                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#596CA6' }}>{r.label}</p>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                <p className="text-sm font-bold uppercase tracking-widest" style={{ color: '#596CA6' }}>{r.label}</p>
+                <span className="text-sm font-semibold px-2 py-0.5 rounded-full"
                   style={r.outcome === 'good'
                     ? { background: '#EEF2FA', color: '#214C91' }
                     : r.outcome === 'bad'
@@ -484,7 +485,7 @@ export default function ReimbursementRoulette({ userRole }) {
                   const isBest = ci === bestChoice
                   const roleOut = getRoleOutcome(round.id, ci)
                   return (
-                    <div key={ci} className="rounded-xl px-4 py-3 text-sm"
+                    <div key={ci} className="rounded-xl px-4 py-3 text-base"
                       style={
                         isChosen && isBest ? { border: '1px solid #214C91', background: '#EEF2FA' }
                         : isChosen ? { border: '1px solid #E24B4A', background: '#FEF2F2' }
@@ -492,17 +493,17 @@ export default function ReimbursementRoulette({ userRole }) {
                         : { border: '1px solid #F3F4F6', background: 'white', opacity: 0.5 }
                       }>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-bold" style={{ color: '#214C91' }}>
+                        <span className="text-sm font-bold" style={{ color: '#214C91' }}>
                           {isChosen ? '👆 Your choice' : isBest ? '✅ Best outcome' : ''}
                         </span>
-                        <span className="text-xs font-semibold ml-auto"
+                        <span className="text-sm font-semibold ml-auto"
                           style={{ color: c.impact === 0 ? '#214C91' : c.impact > -15 ? '#C45A44' : '#991B1B' }}>
                           {c.impact === 0 ? 'No loss' : `${c.impact}% access`}
                         </span>
                       </div>
-                      <p className="text-sm font-medium mb-1" style={{ color: isChosen || isBest ? '#214C91' : '#6B7280' }}>{c.text}</p>
+                      <p className="text-base font-medium mb-1" style={{ color: isChosen || isBest ? '#214C91' : '#6B7280' }}>{c.text}</p>
                       {(isChosen || isBest) && roleOut && (
-                        <p className="text-xs leading-relaxed mt-1" style={{ color: '#596CA6' }}>{roleOut.text}</p>
+                        <p className="text-sm leading-relaxed mt-1" style={{ color: '#596CA6' }}>{roleOut.text}</p>
                       )}
                     </div>
                   )
@@ -513,7 +514,7 @@ export default function ReimbursementRoulette({ userRole }) {
         })}
       </div>
 
-      <p className="text-sm leading-relaxed mb-6" style={{ color: '#374151' }}>
+      <p className="text-base leading-relaxed mb-6" style={{ color: '#374151' }}>
         {access > 70
           ? "Strong result. Your drug reached most eligible patients — but you gave up significant margin to get there. The question is whether investors will fund the next drug."
           : access > 40
@@ -521,7 +522,7 @@ export default function ReimbursementRoulette({ userRole }) {
           : "The system failed patients. Your drug works. It's approved. And most eligible patients can't get it. Not because of the science. Not because of the price. Because of how insurance is designed."}
       </p>
       <button onClick={restart}
-        className="px-5 py-2.5 text-sm font-semibold rounded-xl transition-all"
+        className="px-5 py-2.5 text-base font-semibold rounded-xl transition-all"
         style={{ border: '1px solid #D0DAF0', color: '#214C91', background: 'white' }}
         onMouseEnter={e => e.currentTarget.style.background = '#EEF2FA'}
         onMouseLeave={e => e.currentTarget.style.background = 'white'}>

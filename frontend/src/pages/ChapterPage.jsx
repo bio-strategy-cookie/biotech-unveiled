@@ -975,8 +975,8 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
           )}
 
           {topic.type === 'quiz' && <QuizBlock topic={topic} isFinalExam={isFinalExam} onPass={() => setShowCertificate(true)} />}
-          {topic.type === 'game' && topic.id === 'c9t5' && <Stakeholder userRole={userRole} />}
-          {topic.type === 'game' && topic.id !== 'c9t5' && <ReimbursementRoulette userRole={userRole} />}
+          {topic.type === 'game' && topic.id === 'c9t7' && <Stakeholder userRole={userRole} />}
+          {topic.type === 'game' && topic.id !== 'c9t7' && <ReimbursementRoulette userRole={userRole} />}
           {topic.type === 'data' && <DataBlock topic={topic} />}
           {topic.type === 'guess' && <GuessBlock topic={topic} />}
 

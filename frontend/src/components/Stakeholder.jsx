@@ -171,21 +171,21 @@ export default function Stakeholder({ userRole: propRole }) {
   if (screen === 'intro') return (
     <div className="rounded-2xl overflow-hidden border border-gray-200">
       <div className="px-8 pt-8 pb-6" style={{ background: 'linear-gradient(to bottom, #0f2d5a, #1A4D8C)' }}>
-        <div className="inline-block text-xs font-semibold px-3 py-1 rounded-full mb-4"
+        <div className="inline-block text-sm font-semibold px-3 py-1 rounded-full mb-4"
           style={{ background: 'rgba(255,255,255,0.15)', color: 'white' }}>
           Stakeholder
         </div>
-        <h2 className="text-xl font-semibold mb-2" style={{ color: 'white' }}>
+        <h2 className="text-2xl font-semibold mb-2" style={{ color: 'white' }}>
           Every role shapes the drug journey. Yours matters most right now.
         </h2>
-        <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.7)' }}>
+        <p className="text-base leading-relaxed" style={{ color: 'rgba(255,255,255,0.7)' }}>
           Pick your role. Face 5 decisions only you can make. Watch in real time as your choices ripple to the scientist, investor, clinician, and policy maker — and see how the whole system responds.
         </p>
       </div>
       <div className="px-8 py-6" style={{ background: '#F6F5F0' }}>
         {!propRole && (
           <>
-            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Choose your role</p>
+            <p className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Choose your role</p>
             <div className="grid grid-cols-2 gap-3 mb-6">
               {Object.entries(roles).map(([key, r]) => (
                 <button key={key} onClick={() => setSelectedRole(key)}
@@ -195,9 +195,9 @@ export default function Stakeholder({ userRole: propRole }) {
                     background: selectedRole === key ? r.bg : 'white',
                   }}>
                   <div className="text-2xl mb-2">{r.emoji}</div>
-                  <div className="text-sm font-semibold mb-1"
+                  <div className="text-base font-semibold mb-1"
                     style={{ color: selectedRole === key ? r.text : '#111827' }}>{r.label}</div>
-                  <div className="text-xs leading-relaxed"
+                  <div className="text-sm leading-relaxed"
                     style={{ color: selectedRole === key ? r.text : '#6B7280' }}>{r.desc}</div>
                 </button>
               ))}
@@ -211,7 +211,7 @@ export default function Stakeholder({ userRole: propRole }) {
           </p>
         )}
         <button onClick={() => role && setScreen('game')}
-          className="w-full py-3 rounded-xl text-sm font-semibold transition-all"
+          className="w-full py-3 rounded-xl text-base font-semibold transition-all"
           style={{
             background: role ? '#214C91' : '#F3F4F6',
             color: role ? 'white' : '#9CA3AF',

@@ -147,7 +147,7 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
         {/* Features strip */}
         <div className="grid grid-cols-3 bg-white border-b border-gray-200">
           {[
-            { bg: '#EEF2FA', color: '#214C91', label: 'AI tutor',     sub: 'Ask questions on every topic',  icon: '🤖' },
+            { bg: '#EEF2FA', color: '#214C91', label: 'NPLB Chatbot', sub: 'Ask questions on every topic',  icon: '🤖' },
             { bg: '#F8DCD6', color: '#C45A44', label: 'XP + streaks', sub: 'Earn points as you progress',   icon: '⚡' },
             { bg: '#EEF2FA', color: '#214C91', label: 'Certificate',  sub: 'Pass the exam to earn yours',   icon: '🏆' },
           ].map((item, i) => (

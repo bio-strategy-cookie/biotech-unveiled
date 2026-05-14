@@ -10,7 +10,6 @@ import chapter6 from '../data/chapter6Data.js'
 import chapter7 from '../data/chapter7Data.js'
 import chapter8 from '../data/chapter8Data.js'
 import chapter9 from '../data/chapter9Data.js'
-import AiTutor from '../components/AiTutor.jsx'
 import ReimbursementRoulette from '../components/ReimbursementRoulette.jsx'
 import Stakeholder from '../components/Stakeholder.jsx'
 import Certificate from '../components/Certificate.jsx'
@@ -159,10 +158,27 @@ function getChapterCompletion(chapterId, totalTopics) {
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-function parseBold(text) {
-  if (!text) return null
-  return text.split(/\*\*(.*?)\*\*/).map((part, i) =>
-    i % 2 === 1 ? <strong key={i} className="font-semibold text-gray-900">{part}</strong> : part
+function NPLBChat() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <button onClick={() => setOpen(o => !o)}
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-full shadow-lg text-white text-sm font-semibold transition-all"
+        style={{ background: open ? '#1A4D8C' : '#214C91' }}>
+        💬 {open ? 'Close chat' : 'Chat NPLB'}
+      </button>
+      {open && (
+        <div className="fixed bottom-20 right-6 z-50 rounded-2xl overflow-hidden shadow-2xl"
+          style={{ width: '380px', height: '520px', border: '1px solid #D0DAF0' }}>
+          <iframe
+            src="https://www.chatbase.co/chatbot-iframe/hyKvrecVZ2v_0gAehyCO_"
+            width="100%"
+            height="100%"
+            style={{ border: 'none' }}
+          />
+        </div>
+      )}
+    </>
   )
 }
 
@@ -765,16 +781,14 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
               <div className="text-white text-xl flex-shrink-0 mt-0.5">🎯</div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.6)' }}>The core idea</div>
-                <p className="text-base font-medium leading-relaxed text-white">{parseBold(topic.coreConcept)}</p>
+                <p className="text-base font-medium leading-relaxed text-white">{topic.coreConcept}</p>
               </div>
             </div>
           )}
 
           {topic.introImageUrl && (
-            <div className="flex justify-center">
-              <img src={topic.introImageUrl} alt={topic.title} className="rounded-xl"
-                style={{ maxHeight: '260px', width: '200px', objectFit: 'cover', objectPosition: 'center top' }} />
-            </div>
+            <img src={topic.introImageUrl} alt={topic.title} className="rounded-xl"
+              style={{ maxHeight: '220px', width: '160px', objectFit: 'cover', objectPosition: 'center top' }} />
           )}
 
           {/* contentBlocks: ordered sequence of text / image / video */}
@@ -830,7 +844,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
                       style={{ maxHeight: '400px', objectFit: 'contain' }} />
                   )}
                   {topic.imageCaption && (
-                    <p className="text-base text-gray-600 leading-relaxed">{parseBold(topic.imageCaption)}</p>
+                    <p className="text-base text-gray-600 leading-relaxed">{topic.imageCaption}</p>
                   )}
                 </div>
               )}
@@ -944,7 +958,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
               <div className="text-xl flex-shrink-0">👀</div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#596CA6' }}>As you watch, notice...</div>
-                <p className="text-base leading-relaxed" style={{ color: '#1A4D8C' }}>{parseBold(topic.watchFor)}</p>
+                <p className="text-base leading-relaxed" style={{ color: '#1A4D8C' }}>{topic.watchFor}</p>
               </div>
             </div>
           )}
@@ -955,7 +969,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
               <div className="text-xl flex-shrink-0">🤔</div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#596CA6' }}>Pause and think</div>
-                <p className="text-base leading-relaxed text-gray-700">{parseBold(topic.pauseAndThink)}</p>
+                <p className="text-base leading-relaxed text-gray-700">{topic.pauseAndThink}</p>
               </div>
             </div>
           )}
@@ -969,7 +983,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
           {hasTakeaway && (
             <div className="bg-[#F8DCD6] rounded-xl p-5 border border-[#F4C7BE] mt-auto">
               <div className="text-sm text-[#C45A44] font-semibold uppercase tracking-wide mb-2">Key takeaway</div>
-              <div className="text-base text-[#7A3328] leading-relaxed">{parseBold(takeaways[topic.id])}</div>
+              <div className="text-base text-[#7A3328] leading-relaxed">{takeaways[topic.id]}</div>
             </div>
           )}
 
@@ -1088,7 +1102,7 @@ export default function ChapterPage({ userRole, userLevel, xp, setXp }) {
         </>
       )}
 
-      <AiTutor topicTitle={topic.title} topicContent={topic.content} />
+      <NPLBChat />
     </div>
   )
 }

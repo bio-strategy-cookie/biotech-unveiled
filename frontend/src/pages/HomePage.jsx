@@ -127,7 +127,7 @@ export default function HomePage({ userLevel, setUserLevel, userRole, setUserRol
               </div>
             </div>
             <div className="flex justify-center gap-10 flex-wrap">
-              {[['9', 'Chapters'], ['152', 'Lessons'], ['6–10h', 'Study time'], ['AI', 'Tutor'], ['🏆', 'Certificate'], ['Free', 'To access']].map(([num, label]) => (
+              {[['9', 'Chapters'], ['152', 'Lessons'], ['6–10h', 'Study time'], ['🏆', 'Certificate'], ['Free', 'To access']].map(([num, label]) => (
                 <div key={label} className="text-center">
                   <div className="text-2xl font-semibold text-white">{num}</div>
                   <div className="text-sm text-white font-medium mt-1">{label}</div>
